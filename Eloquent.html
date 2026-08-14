@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul Interaktif: Bab 2 Eloquent ORM Laravel XII RPL</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        laravel: '#FF2D20',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #b91c1c 100%);
+        }
+        .tab-btn.active {
+            border-bottom: 3px solid #FF2D20;
+            color: #FF2D20;
+            font-weight: 700;
+        }
+        .schema-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .schema-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -6px rgba(255, 45, 32, 0.25);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col selection:bg-laravel selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-950/80 backdrop-blur border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-laravel text-white p-2 rounded-xl flex items-center justify-center shadow-lg shadow-laravel/30">
+                        <i class="fa-brands fa-laravel text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg text-white leading-tight">Modul Interaktif Eloquent ORM Laravel</h1>
+                        <p class="text-xs text-slate-400">Kelas XII RPL SMK • Bab 2: Eloquent ORM & Relasi Database</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-2">
+                    <span class="px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-xs font-semibold">
+                        <i class="fa-solid fa-school-flag mr-1"></i> Studi Kasus: Pengaduan Sarpras Sekolah
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-16 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex space-x-8 overflow-x-auto no-scrollbar">
+                <button onclick="switchTab('materi')" id="tab-materi" class="tab-btn active py-4 px-2 text-sm font-medium whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-book-open"></i> 1. Materi Eloquent & Migration
+                </button>
+                <button onclick="switchTab('skema')" id="tab-skema" class="tab-btn py-4 px-2 text-sm font-medium whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-sitemap"></i> 2. Skema DB, Migration & Relasi
+                </button>
+                <button onclick="switchTab('simulasi')" id="tab-simulasi" class="tab-btn py-4 px-2 text-sm font-medium whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-terminal"></i> 3. Simulasi Query Playground
+                </button>
+                <button onclick="switchTab('kuis')" id="tab-kuis" class="tab-btn py-4 px-2 text-sm font-medium whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i> 4. Latihan Soal Evaluasi
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- TAB 1: MATERI LENGKAP -->
+        <section id="sec-materi" class="space-y-8">
+            <!-- Hero Banner -->
+            <div class="gradient-bg p-8 rounded-3xl border border-slate-700/50 shadow-2xl relative overflow-hidden">
+                <div class="relative z-10 max-w-3xl">
+                    <span class="inline-block px-3 py-1 bg-laravel/20 text-laravel border border-laravel/30 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">
+                        BAB 2 — OBJECT RELATIONAL MAPPING (ORM)
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Menguasai Eloquent ORM Laravel pada Sistem Sarpras Sekolah</h2>
+                    <p class="text-slate-300 text-base leading-relaxed">
+                        <strong>Eloquent ORM</strong> adalah implementasi <em>Active Record Architecture</em> pada Laravel yang memungkinkan pengembang mengoperasikan basis data MySQL menggunakan objek dan metode Pemrograman Berorientasi Objek (OOP) tanpa harus menulis perintah SQL mentah secara manual.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card: SQL Native vs Query Builder vs Eloquent -->
+            <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg">
+                <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-code-compare text-laravel"></i> Perbandingan Pengolahan Data di Laravel
+                </h3>
+                <p class="text-slate-300 text-sm mb-6">
+                    Lihat bagaimana sintaks pengambilan data pengaduan sarpras yang rusak ditulis menggunakan 3 pendekatan berbeda:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Native SQL -->
+                    <div class="bg-slate-900 border border-slate-700/80 p-5 rounded-xl space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-400 uppercase">1. Native SQL</span>
+                            <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">Manual</span>
+                        </div>
+                        <div class="bg-slate-950 p-3 rounded-lg font-mono text-xs text-red-400 overflow-x-auto">
+                            SELECT * FROM pengaduans WHERE status = 'proses';
+                        </div>
+                        <p class="text-xs text-slate-400">Rentan terhadap SQL Injection jika tidak dishitung dengan pdo bind value manual.</p>
+                    </div>
+
+                    <!-- Query Builder -->
+                    <div class="bg-slate-900 border border-slate-700/80 p-5 rounded-xl space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-sky-400 uppercase">2. Query Builder</span>
+                            <span class="text-[10px] bg-sky-950 text-sky-300 px-2 py-0.5 rounded">DB Facade</span>
+                        </div>
+                        <div class="bg-slate-950 p-3 rounded-lg font-mono text-xs text-sky-300 overflow-x-auto">
+                            DB::table('pengaduans')->where('status', 'proses')->get();
+                        </div>
+                        <p class="text-xs text-slate-400">Aman dari SQL Injection, namun mengembalikan data berupa `stdClass` tanpa method relasi.</p>
+                    </div>
+
+                    <!-- Eloquent ORM -->
+                    <div class="bg-slate-900 border border-laravel/40 p-5 rounded-xl space-y-3 bg-laravel/5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-laravel uppercase">3. Eloquent ORM</span>
+                            <span class="text-[10px] bg-laravel/20 text-laravel px-2 py-0.5 rounded font-bold">Rekomendasi</span>
+                        </div>
+                        <div class="bg-slate-950 p-3 rounded-lg font-mono text-xs text-emerald-400 overflow-x-auto">
+                            Pengaduan::where('status', 'proses')->get();
+                        </div>
+                        <p class="text-xs text-slate-300">Mengembalikan `Eloquent Collection` dari objek Model lengkap dengan relasi antar tabel.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid: Model Structure & Mass Assignment -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Anatomi Model Eloquent -->
+                <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg space-y-4">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-cube text-amber-400"></i> Anatomi Berkas Model Eloquent
+                    </h3>
+                    <p class="text-sm text-slate-300">
+                        Secara standar, nama Model berbentuk tunggal (*singular*) dalam Bahasa Inggris, sedangkan nama tabel di MySQL berbentuk jamak (*plural*).
+                    </p>
+
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto">
+                        <span class="text-purple-400">namespace</span> App\Models;<br><br>
+                        <span class="text-purple-400">use</span> Illuminate\Database\Eloquent\Model;<br><br>
+                        <span class="text-blue-400">class</span> <span class="text-emerald-400">Pengaduan</span> <span class="text-blue-400">extends</span> <span class="text-emerald-400">Model</span><br>
+                        {<br>
+                        &nbsp;&nbsp;<span class="text-slate-500">// Menentukan nama tabel kustom jika tidak jamak</span><br>
+                        &nbsp;&nbsp;<span class="text-blue-400">protected</span> <span class="text-amber-300">$table</span> = <span class="text-emerald-300">'pengaduans'</span>;<br><br>
+                        &nbsp;&nbsp;<span class="text-slate-500">// Menentukan kolom atribut yang boleh diisi (Mass Assignment)</span><br>
+                        &nbsp;&nbsp;<span class="text-blue-400">protected</span> <span class="text-amber-300">$fillable</span> = [<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-emerald-300">'user_id'</span>, <span class="text-emerald-300">'sarana_id'</span>, <span class="text-emerald-300">'deskripsi_kerusakan'</span>, <span class="text-emerald-300">'foto'</span>, <span class="text-emerald-300">'status'</span><br>
+                        &nbsp;&nbsp;];<br>
+                        }
+                    </div>
+                </div>
+
+                <!-- Mass Assignment: $fillable vs $guarded -->
+                <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg space-y-4">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-emerald-400"></i> Keamanan: $fillable vs $guarded
+                    </h3>
+                    <p class="text-sm text-slate-300">
+                        Laravel memiliki perlindungan bawaan terhadap celah keamanan <strong>Mass Assignment Vulnerability</strong> (peretas menyuntikkan kolom terlarang seperti `is_admin` via HTTP request).
+                    </p>
+
+                    <div class="space-y-3">
+                        <div class="p-3 bg-emerald-950/30 border border-emerald-800/50 rounded-xl">
+                            <h4 class="font-bold text-emerald-400 text-sm">1. White-listing ($fillable)</h4>
+                            <p class="text-xs text-slate-300 mt-1">
+                                Mendaftarkan kolom mana saja yang **BOLEH** diisi secara langsung menggunakan metode `Pengaduan::create($request->all())`.
+                            </p>
+                        </div>
+
+                        <div class="p-3 bg-rose-950/30 border border-rose-800/50 rounded-xl">
+                            <h4 class="font-bold text-rose-400 text-sm">2. Black-listing ($guarded)</h4>
+                            <p class="text-xs text-slate-300 mt-1">
+                                Mendaftarkan kolom mana yang **HARUS DILINDUNGI** dari input langsung. Jika `$guarded = ['id']`, maka semua kolom selain `id` boleh diisi.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Jenis Relasi Eloquent -->
+            <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg space-y-6">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-diagram-project text-sky-400"></i> Relasi Antar Tabel di Eloquent (Studi Kasus Sarpras)
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- One to Many -->
+                    <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl space-y-2">
+                        <span class="text-xs bg-sky-500/20 text-sky-400 px-2 py-1 rounded font-bold">1 to N (One to Many)</span>
+                        <h4 class="font-bold text-white text-sm">User -> Pengaduan</h4>
+                        <p class="text-xs text-slate-300">Satu Siswa/User dapat membuat banyak laporan pengaduan kerusakan.</p>
+                        <div class="bg-slate-950 p-2 rounded text-[11px] font-mono text-slate-300">
+                            hasMany(Pengaduan::class)
+                        </div>
+                    </div>
+
+                    <!-- Belongs To -->
+                    <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl space-y-2">
+                        <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded font-bold">N to 1 (Inverse)</span>
+                        <h4 class="font-bold text-white text-sm">Pengaduan -> User</h4>
+                        <p class="text-xs text-slate-300">Satu laporan pengaduan dimiliki oleh tepat satu Siswa pelapor.</p>
+                        <div class="bg-slate-950 p-2 rounded text-[11px] font-mono text-slate-300">
+                            belongsTo(User::class)
+                        </div>
+                    </div>
+
+                    <!-- One to One -->
+                    <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl space-y-2">
+                        <span class="text-xs bg-amber-500/20 text-amber-400 px-2 py-1 rounded font-bold">1 to 1 (One to One)</span>
+                        <h4 class="font-bold text-white text-sm">Pengaduan -> Tanggapan</h4>
+                        <p class="text-xs text-slate-300">Satu laporan pengaduan diproses dengan satu respon tanggapan resmi petugas.</p>
+                        <div class="bg-slate-950 p-2 rounded text-[11px] font-mono text-slate-300">
+                            hasOne(Tanggapan::class)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Konsep Database Migration Laravel -->
+            <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg space-y-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-file-code text-laravel"></i> Konsep & Command Migration Database Laravel
+                    </h3>
+                    <span class="px-3 py-1 bg-laravel/10 text-laravel border border-laravel/20 rounded-full text-xs font-semibold">
+                        Database Version Control
+                    </span>
+                </div>
+                <p class="text-slate-300 text-sm">
+                    <strong>Migration</strong> adalah sistem kontrol versi (*version control*) untuk basis data yang memungkinkan pengembang mendefinisikan skema tabel MySQL menggunakan sintaks PHP Fluent Builder tanpa perlu membuat tabel manual di phpMyAdmin.
+                </p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Anatomy Migration -->
+                    <div class="bg-slate-900 p-5 rounded-xl border border-slate-700 space-y-3">
+                        <h4 class="text-sm font-bold text-sky-400 flex items-center gap-2">
+                            <i class="fa-solid fa-code"></i> Sintaks Blueprint Foreign Key
+                        </h4>
+                        <p class="text-xs text-slate-300">
+                            Untuk menghubungkan relasi antar tabel (contoh `pengaduans` merujuk `users` dan `saranas`), gunakan metode `foreignId()` dan `constrained()`:
+                        </p>
+                        <div class="bg-slate-950 p-3 rounded-lg font-mono text-xs text-emerald-400 overflow-x-auto">
+                            $table->foreignId('user_id')<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;->constrained('users')<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;->cascadeOnDelete();
+                        </div>
+                        <ul class="text-xs text-slate-400 space-y-1 list-disc pl-4">
+                            <li><code class="text-amber-300">foreignId()</code>: Membuat kolom unsigned big integer.</li>
+                            <li><code class="text-amber-300">constrained()</code>: Menghubungkan ke Primary Key tabel acuan.</li>
+                            <li><code class="text-amber-300">cascadeOnDelete()</code>: Otomatis menghapus data turunan jika parent dihapus.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Migration Commands -->
+                    <div class="bg-slate-900 p-5 rounded-xl border border-slate-700 space-y-3">
+                        <h4 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-terminal"></i> Perintah Utama Artisan Migration
+                        </h4>
+                        <div class="space-y-2 font-mono text-xs">
+                            <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-slate-300">
+                                <span class="text-laravel">php artisan</span> make:migration create_pengaduans_table
+                                <span class="block text-[10px] font-sans text-slate-500 mt-0.5">// Membuat berkas migration baru</span>
+                            </div>
+                            <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-slate-300">
+                                <span class="text-laravel">php artisan</span> migrate
+                                <span class="block text-[10px] font-sans text-slate-500 mt-0.5">// Mengeksekusi seluruh migration pending ke MySQL</span>
+                            </div>
+                            <div class="bg-slate-950 p-2.5 rounded border border-slate-800 text-slate-300">
+                                <span class="text-laravel">php artisan</span> migrate:fresh --seed
+                                <span class="block text-[10px] font-sans text-slate-500 mt-0.5">// Menghapus semua tabel lalu migrasi ulang + seeding data</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: SKEMA DB & RELASI INTERAKTIF -->
+        <section id="sec-skema" class="hidden space-y-8">
+            <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <span class="px-3 py-1 bg-laravel/20 text-laravel border border-laravel/30 rounded-full text-xs font-semibold uppercase">
+                            DIAGRAM ERD & MIGRATION SARPRAS SEKOLAH
+                        </span>
+                        <h2 class="text-2xl font-bold text-white mt-2">Arsitektur Basis Data, Berkas Migration & Relasi Model</h2>
+                        <p class="text-slate-400 text-sm">Klik salah satu kartu tabel di bawah ini untuk menginspeksi struktur kolom, skema Migration Laravel, dan metode relasi Eloquent secara langsung!</p>
+                    </div>
+                </div>
+
+                <!-- Interactive Schema Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 my-6">
+                    
+                    <!-- Table 1: Users -->
+                    <div onclick="inspectTable('users')" class="schema-card cursor-pointer bg-slate-900 border-2 border-indigo-500/50 p-4 rounded-2xl text-center">
+                        <div class="w-12 h-12 mx-auto bg-indigo-500/20 text-indigo-400 rounded-xl flex items-center justify-center text-xl mb-2">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">users</h3>
+                        <p class="text-[11px] text-indigo-400 mt-1">Siswa & Petugas Sarpras</p>
+                    </div>
+
+                    <!-- Table 2: Kategoris -->
+                    <div onclick="inspectTable('kategoris')" class="schema-card cursor-pointer bg-slate-900 border-2 border-purple-500/50 p-4 rounded-2xl text-center">
+                        <div class="w-12 h-12 mx-auto bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center text-xl mb-2">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">kategoris</h3>
+                        <p class="text-[11px] text-purple-400 mt-1">Kategori (Elektronik/Mebel)</p>
+                    </div>
+
+                    <!-- Table 3: Saranas -->
+                    <div onclick="inspectTable('saranas')" class="schema-card cursor-pointer bg-slate-900 border-2 border-emerald-500/50 p-4 rounded-2xl text-center">
+                        <div class="w-12 h-12 mx-auto bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-xl mb-2">
+                            <i class="fa-solid fa-chair"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">saranas</h3>
+                        <p class="text-[11px] text-emerald-400 mt-1">Aset Sarana Sekolah</p>
+                    </div>
+
+                    <!-- Table 4: Pengaduans -->
+                    <div onclick="inspectTable('pengaduans')" class="schema-card cursor-pointer bg-slate-900 border-2 border-laravel p-4 rounded-2xl text-center">
+                        <div class="w-12 h-12 mx-auto bg-laravel/20 text-laravel rounded-xl flex items-center justify-center text-xl mb-2">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">pengaduans</h3>
+                        <p class="text-[11px] text-laravel mt-1">Laporan Kerusakan</p>
+                    </div>
+
+                    <!-- Table 5: Tanggapans -->
+                    <div onclick="inspectTable('tanggapans')" class="schema-card cursor-pointer bg-slate-900 border-2 border-sky-500/50 p-4 rounded-2xl text-center">
+                        <div class="w-12 h-12 mx-auto bg-sky-500/20 text-sky-400 rounded-xl flex items-center justify-center text-xl mb-2">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">tanggapans</h3>
+                        <p class="text-[11px] text-sky-400 mt-1">Tanggapan & Perbaikan</p>
+                    </div>
+
+                </div>
+
+                <!-- Schema Details Panel -->
+                <div id="schema-inspect-panel" class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+                    <p class="text-center text-slate-400 text-sm">Klik salah satu tabel di atas untuk memuat detail kolom dan metode relasi Eloquent Model-nya!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: SIMULASI QUERY PLAYGROUND -->
+        <section id="sec-simulasi" class="hidden space-y-8">
+            <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Interactive Eloquent Query Playground</h2>
+                        <p class="text-slate-400 text-sm">Pilih scenario operasi database pengaduan sarpras untuk melihat bagaimana sintaks Eloquent diproses menjadi Query SQL mentah & Hasil Data.</p>
+                    </div>
+                </div>
+
+                <!-- Preset Query Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+                    <button onclick="runSimulatedQuery('get_all')" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl text-left text-xs space-y-1 transition">
+                        <span class="font-bold text-emerald-400 block"><i class="fa-solid fa-magnifying-glass"></i> 1. Ambil Semua Pengaduan</span>
+                        <code class="text-slate-400 font-mono">Pengaduan::all();</code>
+                    </button>
+
+                    <button onclick="runSimulatedQuery('where_pending')" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl text-left text-xs space-y-1 transition">
+                        <span class="font-bold text-amber-400 block"><i class="fa-solid fa-filter"></i> 2. Filter Status Pending</span>
+                        <code class="text-slate-400 font-mono">Pengaduan::where('status', 'pending')->get();</code>
+                    </button>
+
+                    <button onclick="runSimulatedQuery('with_relations')" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl text-left text-xs space-y-1 transition">
+                        <span class="font-bold text-purple-400 block"><i class="fa-solid fa-link"></i> 3. Eager Loading Relasi</span>
+                        <code class="text-slate-400 font-mono">Pengaduan::with(['user', 'sarana'])->get();</code>
+                    </button>
+
+                    <button onclick="runSimulatedQuery('insert_data')" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl text-left text-xs space-y-1 transition">
+                        <span class="font-bold text-laravel block"><i class="fa-solid fa-plus-circle"></i> 4. Tambah Laporan Baru</span>
+                        <code class="text-slate-400 font-mono">Pengaduan::create([...]);</code>
+                    </button>
+
+                    <button onclick="runSimulatedQuery('update_status')" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl text-left text-xs space-y-1 transition">
+                        <span class="font-bold text-sky-400 block"><i class="fa-solid fa-pen-to-square"></i> 5. Update Status Pengaduan</span>
+                        <code class="text-slate-400 font-mono">$pengaduan->update(['status' => 'proses']);</code>
+                    </button>
+
+                    <button onclick="runSimulatedQuery('delete_data')" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl text-left text-xs space-y-1 transition">
+                        <span class="font-bold text-rose-400 block"><i class="fa-solid fa-trash-can"></i> 6. Hapus Record Pengaduan</span>
+                        <code class="text-slate-400 font-mono">$pengaduan->delete();</code>
+                    </button>
+                </div>
+
+                <!-- Console Translator Output Box -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Left: Code & SQL Translator -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4">
+                        <div>
+                            <span class="text-xs font-bold text-laravel uppercase tracking-wider block mb-1">PHP Eloquent ORM Code</span>
+                            <div id="sim-eloquent-code" class="bg-slate-900 p-3 rounded-xl border border-slate-800 font-mono text-xs text-emerald-400 overflow-x-auto min-h-[50px] flex items-center">
+                                // Pilih scenario query di atas
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-xs font-bold text-sky-400 uppercase tracking-wider block mb-1">Translated Raw SQL Query (MySQL)</span>
+                            <div id="sim-sql-code" class="bg-slate-900 p-3 rounded-xl border border-slate-800 font-mono text-xs text-sky-300 overflow-x-auto min-h-[60px] flex items-center">
+                                -- Query SQL hasil kompilasi Laravel akan muncul di sini
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Simulated Output Results -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-2">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-wider block">Database Output Result (JSON / Rows)</span>
+                        <div id="sim-result-output" class="bg-slate-900 p-3 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 overflow-x-auto min-h-[160px] max-h-[220px] overflow-y-auto">
+                            // Hasil eksekusi database
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: LATIHAN SOAL EVALUASI -->
+        <section id="sec-kuis" class="hidden space-y-8">
+            <!-- Quiz Intro Banner -->
+            <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <span class="px-3 py-1 bg-laravel/20 text-laravel border border-laravel/30 rounded-full text-xs font-semibold">
+                            EVALUASI BAB 2 — ELOQUENT ORM & RELASI
+                        </span>
+                        <h2 class="text-2xl font-bold text-white mt-2">Uji Pemahaman Eloquent ORM Laravel</h2>
+                        <p class="text-slate-400 text-sm mt-1">
+                            Total 20 Soal/Set (5 Pilihan Ganda, 5 PG Kompleks, 5 Benar/Salah, & 5 Set Menjodohkan @6 Kolom).
+                        </p>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-center shrink-0">
+                        <span class="text-xs text-slate-400 block font-medium">Skor Saat Ini</span>
+                        <span id="score-display" class="text-2xl font-black text-emerald-400">0 / 100</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Category Selector Tabs -->
+            <div class="flex space-x-3 border-b border-slate-800 pb-2 overflow-x-auto no-scrollbar">
+                <button onclick="switchQuizCategory('pg')" id="quiz-tab-pg" class="px-4 py-2 text-xs font-bold rounded-xl bg-laravel text-white whitespace-nowrap shadow-md">
+                    Bagian A: Pilihan Ganda (5 Soal)
+                </button>
+                <button onclick="switchQuizCategory('kompleks')" id="quiz-tab-kompleks" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap">
+                    Bagian B: PG Kompleks (5 Soal)
+                </button>
+                <button onclick="switchQuizCategory('bs')" id="quiz-tab-bs" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap">
+                    Bagian C: Benar / Salah (5 Soal)
+                </button>
+                <button onclick="switchQuizCategory('jodoh')" id="quiz-tab-jodoh" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap">
+                    Bagian D: Menjodohkan (5 Set Soal)
+                </button>
+            </div>
+
+            <!-- Quiz Questions Container -->
+            <div id="quiz-questions-container" class="space-y-6">
+                <!-- Dynamically Populated by JS -->
+            </div>
+
+            <!-- Quiz Submit & Reset Bar -->
+            <div class="bg-slate-800/90 border border-slate-700 p-6 rounded-2xl flex flex-wrap items-center justify-between gap-4">
+                <button onclick="resetQuiz()" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-bold text-sm rounded-xl transition flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-left"></i> Reset Jawaban
+                </button>
+                <button onclick="submitQuiz()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl transition shadow-lg shadow-emerald-600/30 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Semua Jawaban
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Custom Result Modal (No alert) -->
+    <div id="result-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-lg w-full p-6 shadow-2xl text-center space-y-5 animate-fade-in">
+            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-3xl mx-auto border border-emerald-500/30">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <div>
+                <h3 class="text-2xl font-extrabold text-white">Hasil Evaluasi Eloquent ORM!</h3>
+                <p class="text-sm text-slate-400 mt-1">Berikut ringkasan capaian pemahaman materi Bab 2 Anda.</p>
+            </div>
+            <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
+                <div class="text-4xl font-black text-emerald-400" id="modal-score-val">0 / 100</div>
+                <div class="text-xs text-slate-400 font-mono" id="modal-points-detail">Poin Terkumpul: 0 dari 20 Poin Maksimal</div>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed" id="modal-feedback-msg">
+                Hasil evaluasi Anda telah dikalkulasi secara otomatis.
+            </p>
+            <button onclick="closeResultModal()" class="w-full py-3 bg-laravel hover:bg-laravel/90 text-white font-bold rounded-xl shadow-lg transition">
+                Tutup & Periksa Pembahasan
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            <p>Modul Pembelajaran Interaktif Laravel Eloquent ORM • Kompetensi Keahlian Rekayasa Perangkat Lunak (RPL) SMK Kelas XII.</p>
+        </div>
+    </footer>
+
+    <!-- Application Logic & Data Script -->
+    <script>
+        // --- 1. TAB SWITCHING LOGIC ---
+        function switchTab(tabName) {
+            document.querySelectorAll('section[id^="sec-"]').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(`sec-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- 2. SCHEMA INSPECTOR DATA & LOGIC ---
+        const schemaData = {
+            users: {
+                title: "Tabel: users (Model: User)",
+                migrationFile: "database/migrations/2026_01_01_000001_create_users_table.php",
+                desc: "Menyimpan data pengguna sistem (Siswa pelapor dan Petugas Sarpras).",
+                columns: [
+                    { name: "id", type: "bigint (PK)", desc: "Primary Key Auto Increment" },
+                    { name: "name", type: "varchar", desc: "Nama lengkap siswa/petugas" },
+                    { name: "email", type: "varchar (Unique)", desc: "Email akun pengguna" },
+                    { name: "password", type: "varchar", desc: "Kata sandi terenkripsi (Hash)" },
+                    { name: "role", type: "enum", desc: "'siswa' atau 'petugas'" },
+                    { name: "created_at / updated_at", type: "timestamp", desc: "Waktu otomatis Laravel" }
+                ],
+                relationCode: `// App/Models/User.php
+public function pengaduan() {
+    return $this->hasMany(Pengaduan::class, 'user_id');
+}`,
+                migrationCode: `<?php
+
+use Illuminate\\Database\\Migrations\\Migration;
+use Illuminate\\Database\\Schema\\Blueprint;
+use Illuminate\\Support\\Facades\\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->enum('role', ['siswa', 'petugas'])->default('siswa');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('users');
+    }
+};`
+            },
+            kategoris: {
+                title: "Tabel: kategoris (Model: Kategori)",
+                migrationFile: "database/migrations/2026_01_01_000002_create_kategoris_table.php",
+                desc: "Pengelompokan jenis sarana sekolah (Contoh: Mebel, Elektronik, Bangunan).",
+                columns: [
+                    { name: "id", type: "bigint (PK)", desc: "Primary Key" },
+                    { name: "nama_kategori", type: "varchar", desc: "Nama Kategori Sarpras" },
+                    { name: "keterangan", type: "varchar (Nullable)", desc: "Deskripsi singkat kategori" },
+                    { name: "created_at / updated_at", type: "timestamp", desc: "Waktu pembuatan & update" }
+                ],
+                relationCode: `// App/Models/Kategori.php
+public function sarana() {
+    return $this->hasMany(Sarana::class, 'kategori_id');
+}`,
+                migrationCode: `<?php
+
+use Illuminate\\Database\\Migrations\\Migration;
+use Illuminate\\Database\\Schema\\Blueprint;
+use Illuminate\\Support\\Facades\\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('kategoris', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_kategori');
+            $table->string('keterangan')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('kategoris');
+    }
+};`
+            },
+            saranas: {
+                title: "Tabel: saranas (Model: Sarana)",
+                migrationFile: "database/migrations/2026_01_01_000003_create_saranas_table.php",
+                desc: "Menyimpan aset inventaris fasilitas sekolah.",
+                columns: [
+                    { name: "id", type: "bigint (PK)", desc: "Primary Key" },
+                    { name: "kategori_id", type: "bigint (FK)", desc: "Foreign Key ke tabel kategoris" },
+                    { name: "nama_sarana", type: "varchar", desc: "Contoh: Proyektor Lab RPL" },
+                    { name: "kode_sarana", type: "varchar (Unique)", desc: "Kode seri inventaris" },
+                    { name: "lokasi", type: "varchar", desc: "Lokasi (misal: Ruang Lab 2)" },
+                    { name: "kondisi", type: "enum", desc: "'baik', 'rusak_ringan', 'rusak_berat'" }
+                ],
+                relationCode: `// App/Models/Sarana.php
+public function kategori() {
+    return $this->belongsTo(Kategori::class, 'kategori_id');
+}
+
+public function pengaduan() {
+    return $this->hasMany(Pengaduan::class, 'sarana_id');
+}`,
+                migrationCode: `<?php
+
+use Illuminate\\Database\\Migrations\\Migration;
+use Illuminate\\Database\\Schema\\Blueprint;
+use Illuminate\\Support\\Facades\\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('saranas', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('kategori_id')->constrained('kategoris')->cascadeOnDelete();
+            $table->string('nama_sarana');
+            $table->string('kode_sarana')->unique();
+            $table->string('lokasi');
+            $table->enum('kondisi', ['baik', 'rusak_ringan', 'rusak_berat'])->default('baik');
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('saranas');
+    }
+};`
+            },
+            pengaduans: {
+                title: "Tabel: pengaduans (Model: Pengaduan)",
+                migrationFile: "database/migrations/2026_01_01_000004_create_pengaduans_table.php",
+                desc: "Tabel utama pencatatan laporan kerusakan fasilitas sekolah.",
+                columns: [
+                    { name: "id", type: "bigint (PK)", desc: "Primary Key" },
+                    { name: "user_id", type: "bigint (FK)", desc: "Foreign Key ke tabel users (Siswa)" },
+                    { name: "sarana_id", type: "bigint (FK)", desc: "Foreign Key ke tabel saranas" },
+                    { name: "deskripsi_kerusakan", type: "text", desc: "Rincian kerusakan" },
+                    { name: "foto", type: "varchar (Nullable)", desc: "Path foto bukti kerusakan" },
+                    { name: "status", type: "enum", desc: "'pending', 'proses', 'selesai'" }
+                ],
+                relationCode: `// App/Models/Pengaduan.php
+public function user() {
+    return $this->belongsTo(User::class, 'user_id');
+}
+
+public function sarana() {
+    return $this->belongsTo(Sarana::class, 'sarana_id');
+}
+
+public function tanggapan() {
+    return $this->hasOne(Tanggapan::class, 'pengaduan_id');
+}`,
+                migrationCode: `<?php
+
+use Illuminate\\Database\\Migrations\\Migration;
+use Illuminate\\Database\\Schema\\Blueprint;
+use Illuminate\\Support\\Facades\\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('pengaduans', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('sarana_id')->constrained('saranas')->cascadeOnDelete();
+            $table->text('deskripsi_kerusakan');
+            $table->string('foto')->nullable();
+            $table->enum('status', ['pending', 'proses', 'selesai'])->default('pending');
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('pengaduans');
+    }
+};`
+            },
+            tanggapans: {
+                title: "Tabel: tanggapans (Model: Tanggapan)",
+                migrationFile: "database/migrations/2026_01_01_000005_create_tanggapans_table.php",
+                desc: "Tanggapan dan histori perbaikan yang diberikan oleh petugas.",
+                columns: [
+                    { name: "id", type: "bigint (PK)", desc: "Primary Key" },
+                    { name: "pengaduan_id", type: "bigint (FK)", desc: "Foreign Key ke pengaduans" },
+                    { name: "user_id", type: "bigint (FK)", desc: "Foreign Key ke users (Petugas)" },
+                    { name: "tanggapan", type: "text", desc: "Laporan tindakan tindak lanjut" },
+                    { name: "tgl_tanggapan", type: "date", desc: "Tanggal penanganan" }
+                ],
+                relationCode: `// App/Models/Tanggapan.php
+public function pengaduan() {
+    return $this->belongsTo(Pengaduan::class, 'pengaduan_id');
+}
+
+public function petugas() {
+    return $this->belongsTo(User::class, 'user_id');
+}`,
+                migrationCode: `<?php
+
+use Illuminate\\Database\\Migrations\\Migration;
+use Illuminate\\Database\\Schema\\Blueprint;
+use Illuminate\\Support\\Facades\\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('tanggapans', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('pengaduan_id')->constrained('pengaduans')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->text('tanggapan');
+            $table->date('tgl_tanggapan');
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('tanggapans');
+    }
+};`
+            }
+        };
+
+        function inspectTable(tableName) {
+            const data = schemaData[tableName];
+            const panel = document.getElementById('schema-inspect-panel');
+            
+            panel.innerHTML = `
+                <div class="space-y-6 animate-fade-in">
+                    <div class="border-b border-slate-800 pb-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                        <div>
+                            <h3 class="text-lg font-bold text-laravel">${data.title}</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">${data.desc}</p>
+                        </div>
+                        <span class="text-[11px] font-mono bg-slate-900 border border-slate-800 text-slate-400 px-3 py-1 rounded-lg self-start md:self-auto">
+                            <i class="fa-regular fa-file-code mr-1 text-laravel"></i> ${data.migrationFile}
+                        </span>
+                    </div>
+
+                    <!-- Column List & Table Structure -->
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-300 uppercase mb-2 flex items-center gap-1.5">
+                            <i class="fa-solid fa-table text-sky-400"></i> Struktur Kolom Database (MySQL)
+                        </h4>
+                        <div class="bg-slate-900 rounded-xl overflow-hidden border border-slate-800">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                                    <tr>
+                                        <th class="p-2.5">Kolom</th>
+                                        <th class="p-2.5">Tipe Data</th>
+                                        <th class="p-2.5">Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                                    ${data.columns.map(col => `
+                                        <tr>
+                                            <td class="p-2.5 font-mono text-emerald-400 font-semibold">${col.name}</td>
+                                            <td class="p-2.5 font-mono text-sky-400">${col.type}</td>
+                                            <td class="p-2.5 text-slate-400">${col.desc}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Migration File Code -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-xs font-bold text-slate-300 uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-file-invoice text-laravel"></i> Berkas Migration Laravel
+                                </h4>
+                                <button onclick="copyCode(this, '${tableName}-mig')" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 px-2 py-1 rounded text-slate-300 transition">
+                                    <i class="fa-regular fa-copy mr-1"></i> Salin Kode
+                                </button>
+                            </div>
+                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 font-mono text-[11px] text-sky-300 leading-relaxed overflow-x-auto whitespace-pre max-h-[320px]" id="code-${tableName}-mig">${escapeHtml(data.migrationCode)}</div>
+                        </div>
+
+                        <!-- Eloquent Relation Code -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-xs font-bold text-slate-300 uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-code-branch text-amber-400"></i> Model PHP & Relasi Eloquent
+                                </h4>
+                                <button onclick="copyCode(this, '${tableName}-rel')" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 px-2 py-1 rounded text-slate-300 transition">
+                                    <i class="fa-regular fa-copy mr-1"></i> Salin Kode
+                                </button>
+                            </div>
+                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 font-mono text-[11px] text-amber-300 leading-relaxed overflow-x-auto whitespace-pre max-h-[320px]" id="code-${tableName}-rel">${escapeHtml(data.relationCode)}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function copyCode(btn, elementId) {
+            const codeText = document.getElementById(`code-${elementId}`).innerText;
+            const tempInput = document.createElement('textarea');
+            tempInput.value = codeText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check mr-1 text-emerald-400"></i> Tersalin!';
+            setTimeout(() => {
+                btn.innerHTML = origHtml;
+            }, 2000);
+        }
+
+        // --- 3. QUERY PLAYGROUND SIMULATOR LOGIC ---
+        function runSimulatedQuery(scenario) {
+            const elCodeBox = document.getElementById('sim-eloquent-code');
+            const sqlCodeBox = document.getElementById('sim-sql-code');
+            const resultBox = document.getElementById('sim-result-output');
+
+            if (scenario === 'get_all') {
+                elCodeBox.innerText = `Pengaduan::all();`;
+                sqlCodeBox.innerText = `SELECT * FROM \`pengaduans\`;`;
+                resultBox.innerHTML = `<pre class="text-emerald-400">[
+  { "id": 1, "user_id": 10, "sarana_id": 2, "deskripsi": "AC Lab 1 Bocor", "status": "pending" },
+  { "id": 2, "user_id": 12, "sarana_id": 5, "deskripsi": "Kursi Patah", "status": "proses" }
+]</pre>`;
+            } else if (scenario === 'where_pending') {
+                elCodeBox.innerText = `Pengaduan::where('status', 'pending')->get();`;
+                sqlCodeBox.innerText = `SELECT * FROM \`pengaduans\` WHERE \`status\` = 'pending';`;
+                resultBox.innerHTML = `<pre class="text-emerald-400">[
+  { "id": 1, "user_id": 10, "sarana_id": 2, "deskripsi": "AC Lab 1 Bocor", "status": "pending" }
+]</pre>`;
+            } else if (scenario === 'with_relations') {
+                elCodeBox.innerText = `Pengaduan::with(['user', 'sarana'])->get();`;
+                sqlCodeBox.innerText = `SELECT * FROM \`pengaduans\`;
+SELECT * FROM \`users\` WHERE \`id\` IN (10, 12);
+SELECT * FROM \`saranas\` WHERE \`id\` IN (2, 5);`;
+                resultBox.innerHTML = `<pre class="text-sky-300">[
+  {
+    "id": 1,
+    "deskripsi": "AC Lab 1 Bocor",
+    "status": "pending",
+    "user": { "name": "Budi Santoso", "email": "budi@smk.sch.id" },
+    "sarana": { "nama_sarana": "AC Sharp 2PK", "lokasi": "Lab RPL 1" }
+  }
+]</pre>`;
+            } else if (scenario === 'insert_data') {
+                elCodeBox.innerText = `Pengaduan::create([
+  'user_id' => 10,
+  'sarana_id' => 3,
+  'deskripsi_kerusakan' => 'Lampu Mati',
+  'status' => 'pending'
+]);`;
+                sqlCodeBox.innerText = `INSERT INTO \`pengaduans\` (\`user_id\`, \`sarana_id\`, \`deskripsi_kerusakan\`, \`status\`, \`updated_at\`, \`created_at\`)
+VALUES (10, 3, 'Lampu Mati', 'pending', '2026-08-14 10:00:00', '2026-08-14 10:00:00');`;
+                resultBox.innerHTML = `<pre class="text-emerald-400 font-bold">// HTTP 201 Created
+{ "id": 3, "user_id": 10, "sarana_id": 3, "status": "pending" }</pre>`;
+            } else if (scenario === 'update_status') {
+                elCodeBox.innerText = `$pengaduan = Pengaduan::find(1);
+$pengaduan->update(['status' => 'proses']);`;
+                sqlCodeBox.innerText = `SELECT * FROM \`pengaduans\` WHERE \`id\` = 1 LIMIT 1;
+UPDATE \`pengaduans\` SET \`status\` = 'proses', \`updated_at\` = '2026-08-14 10:05:00' WHERE \`id\` = 1;`;
+                resultBox.innerHTML = `<pre class="text-amber-300">// Output: true (Record ID 1 berhasil diperbarui ke 'proses')</pre>`;
+            } else if (scenario === 'delete_data') {
+                elCodeBox.innerText = `$pengaduan = Pengaduan::find(1);
+$pengaduan->delete();`;
+                sqlCodeBox.innerText = `DELETE FROM \`pengaduans\` WHERE \`id\` = 1;`;
+                resultBox.innerHTML = `<pre class="text-rose-400">// Output: true (Record ID 1 berhasil dihapus dari tabel)</pre>`;
+            }
+        }
+
+        // --- 4. QUIZ ENGINE DATA & LOGIC ---
+        const quizData = {
+            pg: [
+                {
+                    id: 'pg1',
+                    question: '1. Fitur utama dalam Laravel yang memetakan tabel database MySQL menjadi Objek PHP untuk mempermudah operasi CRUD dinamakan...',
+                    options: ['A. Blade Engine', 'B. Query Builder', 'C. Eloquent ORM', 'D. Artisan CLI', 'E. Middleware'],
+                    correct: 'C',
+                    explanation: 'Eloquent ORM adalah fitur Active Record bawaan Laravel untuk mengoperasikan database secara OOP.'
+                },
+                {
+                    id: 'pg2',
+                    question: '2. Pada Model Pengaduan, metode relasi Eloquent yang paling tepat untuk menghubungkan Pengaduan ke User (Siswa Pelapor) adalah...',
+                    options: ['A. hasMany()', 'B. belongsTo()', 'C. belongsToMany()', 'D. hasOneThrough()', 'E. morphTo()'],
+                    correct: 'B',
+                    explanation: 'Karena kolom `user_id` berada di tabel `pengaduans`, maka kelas Model Pengaduan terhubung menggunakan `belongsTo(User::class)`.'
+                },
+                {
+                    id: 'pg3',
+                    question: '3. Properti Model `$fillable` digunakan untuk menangani perlindungan keamanan dari celah rentan...',
+                    options: ['A. Cross-Site Scripting (XSS)', 'B. SQL Injection', 'C. Mass Assignment Vulnerability', 'D. Cross-Site Request Forgery (CSRF)', 'E. Remote Code Execution'],
+                    correct: 'C',
+                    explanation: '`$fillable` mendaftarkan atribut yang diizinkan untuk diisi secara massal (Mass Assignment).'
+                },
+                {
+                    id: 'pg4',
+                    question: '4. Perintah Eloquent untuk mengambil data pengaduan yang berstatus "pending" sekaligus memuat relasi data `user` secara efisien (Eager Loading) adalah...',
+                    options: ['A. Pengaduan::all()->where(\'status\', \'pending\')', 'B. Pengaduan::with(\'user\')->where(\'status\', \'pending\')->get()', 'C. Pengaduan::join(\'user\')->select(\'pending\')', 'D. Pengaduan::find(\'pending\')->user()', 'E. Pengaduan::has(\'user\')->get()'],
+                    correct: 'B',
+                    explanation: 'Metode `with(\'user\')` melakukan Eager Loading untuk mencegah masalah N+1 query problem.'
+                },
+                {
+                    id: 'pg5',
+                    question: '5. Manakah perintah Artisan yang benar untuk membuat Model `Sarana` sekaligus membuatkan berkas Migration tabelnya secara otomatis?',
+                    options: ['A. php artisan make:model Sarana -m', 'B. php artisan create:model Sarana --migration', 'C. php artisan make:migration Sarana', 'D. php artisan generate:model Sarana -db', 'E. php artisan build:model Sarana'],
+                    correct: 'A',
+                    explanation: 'Opsi `-m` pada perintah `make:model` akan langsung membangkitkan berkas Migration tabel terkait.'
+                }
+            ],
+            kompleks: [
+                {
+                    id: 'k1',
+                    question: '6. Manakah dari pernyataan berikut yang BENAR mengenai sifat dan perilaku Eloquent ORM di Laravel? (Pilih semua yang benar)',
+                    options: [
+                        { val: 'A', text: 'A. Mengembalikan instance Collection dari objek Model saat menggunakan method get().' },
+                        { val: 'B', text: 'B. Mewajibkan penulisan klausa SQL JOIN secara manual untuk setiap relasi.' },
+                        { val: 'C', text: 'C. Otomatis mengelola kolom timestamps created_at dan updated_at.' },
+                        { val: 'D', text: 'D. Secara default nama tabel dianggap berbentuk jamak (plural) dari nama Model.' },
+                        { val: 'E', text: 'E. Tidak mendukung operasi transaksi database.' }
+                    ],
+                    correct: ['A', 'C', 'D'],
+                    explanation: 'A, C, dan D benar. B salah karena relasi diurus oleh metode Eloquent, E salah karena Laravel mendukung DB Transaction.'
+                },
+                {
+                    id: 'k2',
+                    question: '7. Kolom mana saja di bawah ini yang tergolong Foreign Key (FK) pada studi kasus database Sarpras Sekolah kita? (Pilih semua yang benar)',
+                    options: [
+                        { val: 'A', text: 'A. user_id pada tabel pengaduans' },
+                        { val: 'B', text: 'B. sarana_id pada tabel pengaduans' },
+                        { val: 'C', text: 'C. kategori_id pada tabel saranas' },
+                        { val: 'D', text: 'D. email pada tabel users' },
+                        { val: 'E', text: 'E. pengaduan_id pada tabel tanggapans' }
+                    ],
+                    correct: ['A', 'B', 'C', 'E'],
+                    explanation: 'Kecuali email (D) yang merupakan unique attribute, A, B, C, dan E adalah Foreign Key penghubung relasi.'
+                },
+                {
+                    id: 'k3',
+                    question: '8. Manakah metode Eloquent berikut yang digunakan untuk memanipulasi data (Create/Update/Delete)? (Pilih semua yang benar)',
+                    options: [
+                        { val: 'A', text: 'A. Pengaduan::create([...])' },
+                        { val: 'B', text: 'B. $pengaduan->update([...])' },
+                        { val: 'C', text: 'C. $pengaduan->delete()' },
+                        { val: 'D', text: 'D. Pengaduan::where(...)' },
+                        { val: 'E', text: 'E. $pengaduan->save()' }
+                    ],
+                    correct: ['A', 'B', 'C', 'E'],
+                    explanation: 'A (Insert), B (Update), C (Delete), dan E (Save) adalah metode manipulasi data. D hanya penyiapan query builder.'
+                },
+                {
+                    id: 'k4',
+                    question: '9. Apa keuntungan menggunakan Eager Loading `with()` dibanding Lazy Loading biasa di Laravel? (Pilih semua yang benar)',
+                    options: [
+                        { val: 'A', text: 'A. Mencegah terjadinya N+1 Query Problem.' },
+                        { val: 'B', text: 'B. Mengurangi jumlah query yang dieksekusi ke server MySQL.' },
+                        { val: 'C', text: 'C. Menghemat penggunaan memori dan mempercepat respon aplikasi.' },
+                        { val: 'D', text: 'D. Mengubah otomatis database MySQL menjadi PostgreSQL.' },
+                        { val: 'E', text: 'E. Menghilangkan kebutuhan membuat Model PHP.' }
+                    ],
+                    correct: ['A', 'B', 'C'],
+                    explanation: 'Eager loading sangat efisien dalam optimasi query (A, B, C).'
+                },
+                {
+                    id: 'k5',
+                    question: '10. Pernyataan yang BENAR mengenai atribut `$guarded` dalam Model Eloquent adalah... (Pilih semua yang benar)',
+                    options: [
+                        { val: 'A', text: 'A. Digunakan sebagai kebalikan dari atribut $fillable.' },
+                        { val: 'B', text: 'B. Jika diisi $guarded = [] maka semua kolom diizinkan diisi secara massal.' },
+                        { val: 'C', text: 'C. Mendaftar kolom-kolom yang dilarang diisi via Mass Assignment.' },
+                        { val: 'D', text: 'D. Digunakan untuk mengubah jenis database menjadi MongoDB.' },
+                        { val: 'E', text: 'E. Menghapus tabel database secara otomatis.' }
+                    ],
+                    correct: ['A', 'B', 'C'],
+                    explanation: 'A, B, dan C mendeskripsikan peran atribut $guarded dengan akurat.'
+                }
+            ],
+            bs: [
+                {
+                    id: 'bs1',
+                    question: '11. Perintah `$pengaduan = Pengaduan::find(5)` akan mengembalikan null jika data dengan ID 5 tidak ditemukan di database.',
+                    correct: 'Benar',
+                    explanation: 'Metode `find()` mengembalikan `null` jika ID tidak ada, sedangkan `findOrFail()` akan melempar exception ModelNotFoundException (HTTP 404).'
+                },
+                {
+                    id: 'bs2',
+                    question: '12. Secara standar, nama tabel database untuk Model bernama `Sarana` adalah `saranas`.',
+                    correct: 'Benar',
+                    explanation: 'Laravel secara otomatis mengubah nama kelas Model menjadi bentuk jamak (plural lower-case) untuk nama tabel.'
+                },
+                {
+                    id: 'bs3',
+                    question: '13. Metode relasi `hasMany()` ditulis pada kelas Model yang menyimpan kolom Foreign Key (FK).',
+                    correct: 'Salah',
+                    explanation: 'Metode `hasMany()` ditulis di parent model (misal User), sedangkan model yang menyimpan FK menggunakan `belongsTo()`.'
+                },
+                {
+                    id: 'bs4',
+                    question: '14. Metode `Pengaduan::destroy(1)` dapat digunakan untuk menghapus data pengaduan berdasarkan Primary Key ID tanpa harus memanggil `find()` terlebih dahulu.',
+                    correct: 'Benar',
+                    explanation: '`destroy()` menerima ID langsung untuk melakukan penghapusan data secara praktis.'
+                },
+                {
+                    id: 'bs5',
+                    question: '15. Di Laravel, kita wajib membuat query SQL manual jika ingin menghubungkan dua tabel yang memiliki relasi One to Many.',
+                    correct: 'Salah',
+                    explanation: 'Laravel Eloquent menyediakan metode relasi seperti `hasMany()` dan `belongsTo()` sehingga tidak perlu menulis SQL JOIN manual.'
+                }
+            ],
+            jodoh: [
+                {
+                    id: 'j1',
+                    title: 'Set 1: Metode CRUD Eloquent ORM',
+                    colA: [
+                        { id: '1', text: '1. Pengaduan::all()' },
+                        { id: '2', text: '2. Pengaduan::find($id)' },
+                        { id: '3', text: '3. Pengaduan::create($data)' },
+                        { id: '4', text: '4. $pengaduan->update($data)' },
+                        { id: '5', text: '5. $pengaduan->delete()' },
+                        { id: '6', text: '6. Pengaduan::where(...)->get()' }
+                    ],
+                    colB: [
+                        { key: 'A', text: 'Mengambil seluruh record dari tabel pengaduans' },
+                        { key: 'B', text: 'Mencari satu record pengaduan berdasarkan Primary Key ID' },
+                        { key: 'C', text: 'Menyimpan baris data pengaduan baru (Insert)' },
+                        { key: 'D', text: 'Perbarui data pengaduan yang sudah di-load' },
+                        { key: 'E', text: 'Menghapus record pengaduan dari database' },
+                        { key: 'F', text: 'Mengambil kumpulan data pengaduan sesuai kondisi filter' }
+                    ],
+                    correct: { '1': 'A', '2': 'B', '3': 'C', '4': 'D', '5': 'E', '6': 'F' },
+                    explanation: '1-A, 2-B, 3-C, 4-D, 5-E, 6-F.'
+                },
+                {
+                    id: 'j2',
+                    title: 'Set 2: Metode Relasi Eloquent pada Sarpras Sekolah',
+                    colA: [
+                        { id: '1', text: '1. User -> Pengaduan' },
+                        { id: '2', text: '2. Pengaduan -> User' },
+                        { id: '3', text: '3. Kategori -> Sarana' },
+                        { id: '4', text: '4. Pengaduan -> Tanggapan' },
+                        { id: '5', text: '5. Sarana -> Kategori' },
+                        { id: '6', text: '6. Tanggapan -> Pengaduan' }
+                    ],
+                    colB: [
+                        { key: 'A', text: 'hasMany(Pengaduan::class) - Satu user punya banyak pengaduan' },
+                        { key: 'B', text: 'belongsTo(User::class) - Pengaduan milik satu user pelapor' },
+                        { key: 'C', text: 'hasMany(Sarana::class) - Satu kategori punya banyak sarana' },
+                        { key: 'D', text: 'hasOne(Tanggapan::class) - Pengaduan punya satu respon tanggapan' },
+                        { key: 'E', text: 'belongsTo(Kategori::class) - Sarana tergolong dalam satu kategori' },
+                        { key: 'F', text: 'belongsTo(Pengaduan::class) - Tanggapan merujuk ke satu pengaduan' }
+                    ],
+                    correct: { '1': 'A', '2': 'B', '3': 'C', '4': 'D', '5': 'E', '6': 'F' },
+                    explanation: '1-A, 2-B, 3-C, 4-D, 5-E, 6-F.'
+                },
+                {
+                    id: 'j3',
+                    title: 'Set 3: Properti & Konfigurasi Model Eloquent',
+                    colA: [
+                        { id: '1', text: '1. protected $table' },
+                        { id: '2', text: '2. protected $primaryKey' },
+                        { id: '3', text: '3. protected $fillable' },
+                        { id: '4', text: '4. protected $guarded' },
+                        { id: '5', text: '5. public $timestamps' },
+                        { id: '6', text: '6. protected $casts' }
+                    ],
+                    colB: [
+                        { key: 'A', text: 'Menentukan nama tabel kustom jika tidak mengikuti penamaan jamak' },
+                        { key: 'B', text: 'Menentukan kolom kunci utama kustom jika bukan "id"' },
+                        { key: 'C', text: 'Whitelist kolom yang diizinkan untuk Mass Assignment' },
+                        { key: 'D', text: 'Blacklist kolom yang dilindungi dari Mass Assignment' },
+                        { key: 'E', text: 'Mengaktifkan / mematikan pencatatan created_at & updated_at' },
+                        { key: 'F', text: 'Konversi tipe data kolom secara otomatis (misal array/datetime)' }
+                    ],
+                    correct: { '1': 'A', '2': 'B', '3': 'C', '4': 'D', '5': 'E', '6': 'F' },
+                    explanation: '1-A, 2-B, 3-C, 4-D, 5-E, 6-F.'
+                },
+                {
+                    id: 'j4',
+                    title: 'Set 4: Pemetaan Sintaks Eloquent ke SQL Native Query',
+                    colA: [
+                        { id: '1', text: '1. Pengaduan::all()' },
+                        { id: '2', text: '2. Pengaduan::where(\'status\', \'pending\')->get()' },
+                        { id: '3', text: '3. Pengaduan::find(1)' },
+                        { id: '4', text: '4. Pengaduan::count()' },
+                        { id: '5', text: '5. Pengaduan::orderBy(\'id\', \'desc\')->get()' },
+                        { id: '6', text: '6. $pengaduan->delete()' }
+                    ],
+                    colB: [
+                        { key: 'A', text: 'SELECT * FROM pengaduans;' },
+                        { key: 'B', text: 'SELECT * FROM pengaduans WHERE status = \'pending\';' },
+                        { key: 'C', text: 'SELECT * FROM pengaduans WHERE id = 1 LIMIT 1;' },
+                        { key: 'D', text: 'SELECT COUNT(*) FROM pengaduans;' },
+                        { key: 'E', text: 'SELECT * FROM pengaduans ORDER BY id DESC;' },
+                        { key: 'F', text: 'DELETE FROM pengaduans WHERE id = ...;' }
+                    ],
+                    correct: { '1': 'A', '2': 'B', '3': 'C', '4': 'D', '5': 'E', '6': 'F' },
+                    explanation: '1-A, 2-B, 3-C, 4-D, 5-E, 6-F.'
+                },
+                {
+                    id: 'j5',
+                    title: 'Set 5: Istilah & Konsep Dasar ORM',
+                    colA: [
+                        { id: '1', text: '1. Active Record Pattern' },
+                        { id: '2', text: '2. N+1 Query Problem' },
+                        { id: '3', text: '3. Eager Loading' },
+                        { id: '4', text: '4. Lazy Loading' },
+                        { id: '5', text: '5. Mass Assignment' },
+                        { id: '6', text: '6. Eloquent Collection' }
+                    ],
+                    colB: [
+                        { key: 'A', text: 'Pola arsitektur di mana 1 kelas Model mewakili 1 tabel database' },
+                        { key: 'B', text: 'Masalah pemborosan query akibat memuat relasi di dalam perulangan' },
+                        { key: 'C', text: 'Teknik memuat relasi secara bersamaan di awal menggunakan with()' },
+                        { key: 'D', text: 'Teknik memuat relasi baru saat properti relasi diakses' },
+                        { key: 'E', text: 'Pengisian banyak kolom sekaligus menggunakan array masukan' },
+                        { key: 'F', text: 'Pembungkus array hasil query Laravel dengan metode pembantu ekstra' }
+                    ],
+                    correct: { '1': 'A', '2': 'B', '3': 'C', '4': 'D', '5': 'E', '6': 'F' },
+                    explanation: '1-A, 2-B, 3-C, 4-D, 5-E, 6-F.'
+                }
+            ]
+        };
+
+        let userAnswers = {};
+        let currentQuizCategory = 'pg';
+
+        // --- SUB-CATEGORY SWITCHING FUNCTION ---
+        function switchQuizCategory(cat) {
+            currentQuizCategory = cat;
+            const categories = ['pg', 'kompleks', 'bs', 'jodoh'];
+            
+            categories.forEach(c => {
+                const btn = document.getElementById(`quiz-tab-${c}`);
+                if (btn) {
+                    if (c === cat) {
+                        btn.className = 'px-4 py-2 text-xs font-bold rounded-xl bg-laravel text-white whitespace-nowrap shadow-md';
+                    } else {
+                        btn.className = 'px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap';
+                    }
+                }
+            });
+
+            renderQuizCategory(cat);
+        }
+
+        function renderQuizCategory(cat) {
+            const container = document.getElementById('quiz-questions-container');
+            container.innerHTML = '';
+
+            if (cat === 'pg') {
+                quizData.pg.forEach(item => {
+                    const qCard = document.createElement('div');
+                    qCard.className = 'bg-slate-800/80 border border-slate-700 p-6 rounded-2xl space-y-4';
+                    qCard.innerHTML = `
+                        <p class="font-bold text-white text-base">${item.question}</p>
+                        <div class="space-y-2">
+                            ${item.options.map(opt => {
+                                const optKey = opt.charAt(0);
+                                const isChecked = userAnswers[item.id] === optKey ? 'checked' : '';
+                                return `
+                                    <label class="flex items-center p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 hover:border-slate-500 cursor-pointer">
+                                        <input type="radio" name="${item.id}" value="${optKey}" ${isChecked} onchange="savePGAnswer('${item.id}', '${optKey}')" class="text-laravel focus:ring-laravel mr-3">
+                                        <span class="text-sm text-slate-300">${opt}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                        <div id="exp-${item.id}" class="hidden p-3 bg-slate-900 rounded-xl border border-slate-700 text-xs text-slate-300 mt-2"></div>
+                    `;
+                    container.appendChild(qCard);
+                });
+            } else if (cat === 'kompleks') {
+                quizData.kompleks.forEach(item => {
+                    const qCard = document.createElement('div');
+                    qCard.className = 'bg-slate-800/80 border border-slate-700 p-6 rounded-2xl space-y-4';
+                    const currentArr = userAnswers[item.id] || [];
+                    qCard.innerHTML = `
+                        <p class="font-bold text-white text-base">${item.question}</p>
+                        <div class="space-y-2">
+                            ${item.options.map(opt => {
+                                const isChecked = currentArr.includes(opt.val) ? 'checked' : '';
+                                return `
+                                    <label class="flex items-center p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 hover:border-slate-500 cursor-pointer">
+                                        <input type="checkbox" value="${opt.val}" ${isChecked} onchange="saveKompleksAnswer('${item.id}', '${opt.val}')" class="text-laravel focus:ring-laravel rounded mr-3">
+                                        <span class="text-sm text-slate-300">${opt.text}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                        <div id="exp-${item.id}" class="hidden p-3 bg-slate-900 rounded-xl border border-slate-700 text-xs text-slate-300 mt-2"></div>
+                    `;
+                    container.appendChild(qCard);
+                });
+            } else if (cat === 'bs') {
+                quizData.bs.forEach(item => {
+                    const qCard = document.createElement('div');
+                    qCard.className = 'bg-slate-800/80 border border-slate-700 p-6 rounded-2xl space-y-4';
+                    const userAns = userAnswers[item.id];
+                    qCard.innerHTML = `
+                        <p class="font-bold text-white text-base">${item.question}</p>
+                        <div class="flex gap-4">
+                            <label class="flex-1 flex items-center justify-center p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 hover:border-emerald-500 cursor-pointer ${userAns === 'Benar' ? 'border-emerald-500 bg-emerald-950/30' : ''}">
+                                <input type="radio" name="${item.id}" value="Benar" ${userAns === 'Benar' ? 'checked' : ''} onchange="saveBSAnswer('${item.id}', 'Benar')" class="text-emerald-500 focus:ring-emerald-500 mr-2">
+                                <span class="text-sm font-bold text-emerald-400"><i class="fa-solid fa-circle-check mr-1"></i> BENAR</span>
+                            </label>
+                            <label class="flex-1 flex items-center justify-center p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 hover:border-rose-500 cursor-pointer ${userAns === 'Salah' ? 'border-rose-500 bg-rose-950/30' : ''}">
+                                <input type="radio" name="${item.id}" value="Salah" ${userAns === 'Salah' ? 'checked' : ''} onchange="saveBSAnswer('${item.id}', 'Salah')" class="text-rose-500 focus:ring-rose-500 mr-2">
+                                <span class="text-sm font-bold text-rose-400"><i class="fa-solid fa-circle-xmark mr-1"></i> SALAH</span>
+                            </label>
+                        </div>
+                        <div id="exp-${item.id}" class="hidden p-3 bg-slate-900 rounded-xl border border-slate-700 text-xs text-slate-300 mt-2"></div>
+                    `;
+                    container.appendChild(qCard);
+                });
+            } else if (cat === 'jodoh') {
+                quizData.jodoh.forEach(set => {
+                    const setCard = document.createElement('div');
+                    setCard.className = 'bg-slate-800/80 border border-slate-700 p-6 rounded-2xl space-y-6';
+                    
+                    const userSetAns = userAnswers[set.id] || {};
+
+                    setCard.innerHTML = `
+                        <div class="border-b border-slate-700 pb-3 flex items-center justify-between">
+                            <h3 class="font-bold text-laravel text-base flex items-center gap-2">
+                                <i class="fa-solid fa-list-check"></i> ${set.title}
+                            </h3>
+                            <span class="text-xs bg-slate-900 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-mono">6 Pasangan</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                            <div class="lg:col-span-7 space-y-4">
+                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Kolom A (Jodohkan Pilihan Ini)</h4>
+                                ${set.colA.map(itemA => {
+                                    const selectedKey = userSetAns[itemA.id] || '';
+                                    return `
+                                        <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-700/80 space-y-2">
+                                            <p class="text-xs font-semibold text-white">${itemA.text}</p>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-slate-400 shrink-0">Pasangan:</span>
+                                                <select onchange="saveJodohAnswer('${set.id}', '${itemA.id}', this.value)" class="w-full bg-slate-800 border border-slate-600 text-slate-200 text-xs rounded-lg p-2 focus:ring-laravel focus:border-laravel">
+                                                    <option value="">-- Pilih Jawaban dari Kolom B --</option>
+                                                    ${set.colB.map(itemB => `
+                                                        <option value="${itemB.key}" ${selectedKey === itemB.key ? 'selected' : ''}>
+                                                            [ ${itemB.key} ] ${itemB.text.substring(0, 45)}...
+                                                        </option>
+                                                    `).join('')}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+
+                            <div class="lg:col-span-5 bg-slate-900/90 border border-slate-700 p-4 rounded-xl h-fit space-y-3">
+                                <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-info"></i> Pilihan Kolom B (Referensi)
+                                </h4>
+                                ${set.colB.map(itemB => `
+                                    <div class="p-2 bg-slate-800/60 rounded-lg text-xs border border-slate-700/50">
+                                        <span class="font-bold text-laravel mr-1">[ ${itemB.key} ]</span>
+                                        <span class="text-slate-300">${itemB.text}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div id="exp-${set.id}" class="hidden p-4 bg-slate-900 rounded-xl border border-slate-700 text-xs text-slate-300 mt-2 space-y-1"></div>
+                    `;
+                    container.appendChild(setCard);
+                });
+            }
+        }
+
+        function savePGAnswer(qId, val) {
+            userAnswers[qId] = val;
+        }
+
+        function saveKompleksAnswer(qId, val) {
+            if (!userAnswers[qId]) userAnswers[qId] = [];
+            const idx = userAnswers[qId].indexOf(val);
+            if (idx > -1) {
+                userAnswers[qId].splice(idx, 1);
+            } else {
+                userAnswers[qId].push(val);
+            }
+        }
+
+        function saveBSAnswer(qId, val) {
+            userAnswers[qId] = val;
+            renderQuizCategory('bs');
+        }
+
+        function saveJodohAnswer(setId, colAId, selectedB) {
+            if (!userAnswers[setId]) userAnswers[setId] = {};
+            userAnswers[setId][colAId] = selectedB;
+        }
+
+        function submitQuiz() {
+            let totalScorePoints = 0;
+            let maxTotalPoints = 20;
+
+            // Check PG
+            quizData.pg.forEach(q => {
+                const expBox = document.getElementById(`exp-${q.id}`);
+                const isCorrect = userAnswers[q.id] === q.correct;
+                if (isCorrect) totalScorePoints += 1;
+                if (expBox) {
+                    expBox.classList.remove('hidden');
+                    expBox.innerHTML = `
+                        <span class="font-bold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'} block">
+                            ${isCorrect ? '✓ Jawaban Benar!' : '✗ Jawaban Salah! Jawaban Benar: ' + q.correct}
+                        </span>
+                        <p class="mt-1">${q.explanation}</p>
+                    `;
+                }
+            });
+
+            // Check Kompleks
+            quizData.kompleks.forEach(q => {
+                const expBox = document.getElementById(`exp-${q.id}`);
+                const userArr = (userAnswers[q.id] || []).slice().sort();
+                const targetArr = q.correct.slice().sort();
+                const isCorrect = JSON.stringify(userArr) === JSON.stringify(targetArr);
+                if (isCorrect) totalScorePoints += 1;
+                if (expBox) {
+                    expBox.classList.remove('hidden');
+                    expBox.innerHTML = `
+                        <span class="font-bold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'} block">
+                            ${isCorrect ? '✓ Jawaban Benar!' : '✗ Jawaban Kurang Tepat! Kunci Jawaban: ' + q.correct.join(', ')}
+                        </span>
+                        <p class="mt-1">${q.explanation}</p>
+                    `;
+                }
+            });
+
+            // Check BS
+            quizData.bs.forEach(q => {
+                const expBox = document.getElementById(`exp-${q.id}`);
+                const isCorrect = userAnswers[q.id] === q.correct;
+                if (isCorrect) totalScorePoints += 1;
+                if (expBox) {
+                    expBox.classList.remove('hidden');
+                    expBox.innerHTML = `
+                        <span class="font-bold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'} block">
+                            ${isCorrect ? '✓ Jawaban Benar!' : '✗ Jawaban Salah! Kunci: ' + q.correct}
+                        </span>
+                        <p class="mt-1">${q.explanation}</p>
+                    `;
+                }
+            });
+
+            // Check Jodoh
+            quizData.jodoh.forEach(set => {
+                const expBox = document.getElementById(`exp-${set.id}`);
+                const userAns = userAnswers[set.id] || {};
+                let setCorrectMatches = 0;
+
+                Object.keys(set.correct).forEach(colAId => {
+                    if (userAns[colAId] === set.correct[colAId]) {
+                        setCorrectMatches++;
+                    }
+                });
+
+                const setScore = setCorrectMatches / 6;
+                totalScorePoints += setScore;
+
+                if (expBox) {
+                    expBox.classList.remove('hidden');
+                    const isPerfect = setCorrectMatches === 6;
+                    expBox.innerHTML = `
+                        <span class="font-bold ${isPerfect ? 'text-emerald-400' : 'text-amber-400'} block">
+                            ${isPerfect ? '✓ Sempurna! Semua 6 pasangan benar.' : `ℹ Benar ${setCorrectMatches} dari 6 Pasangan.`}
+                        </span>
+                        <p class="mt-1 font-mono text-[11px] text-slate-300">${set.explanation}</p>
+                    `;
+                }
+            });
+
+            const finalScore = Math.round((totalScorePoints / maxTotalPoints) * 100);
+            document.getElementById('score-display').innerText = `${finalScore} / 100`;
+
+            document.getElementById('modal-score-val').innerText = `${finalScore} / 100`;
+            document.getElementById('modal-points-detail').innerText = `Poin Terkumpul: ${totalScorePoints.toFixed(1)} dari ${maxTotalPoints} Poin Maksimal`;
+            
+            let feedback = '';
+            if (finalScore >= 85) {
+                feedback = 'Sangat Luar biasa! Anda telah menguasai konsep Eloquent ORM, Mass Assignment, dan Relasi Database Laravel dengan sangat matang!';
+            } else if (finalScore >= 70) {
+                feedback = 'Bagus! Pemahaman Anda sudah cukup baik. Pelajari kembali relasi tabel dan sintaks Eager Loading untuk hasil yang sempurna.';
+            } else {
+                feedback = 'Tetap semangat! Cobalah membaca kembali Tab 1 dan menguji scenario pada Tab 3 Query Playground untuk melatih pemahaman Anda.';
+            }
+            document.getElementById('modal-feedback-msg').innerText = feedback;
+            document.getElementById('result-modal').classList.remove('hidden');
+        }
+
+        function closeResultModal() {
+            document.getElementById('result-modal').classList.add('hidden');
+        }
+
+        function resetQuiz() {
+            userAnswers = {};
+            document.getElementById('score-display').innerText = `0 / 100`;
+            switchQuizCategory(currentQuizCategory);
+        }
+
+        // --- 5. INITIALIZATION ON LOAD ---
+        window.onload = function() {
+            inspectTable('pengaduans');
+            runSimulatedQuery('get_all');
+            switchQuizCategory('pg');
+        };
+    </script>
+</body>
+</html>
