@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul Interaktif: Bab 1 Konsep MVC Laravel XII RPL</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        laravel: '#FF2D20',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0284c7 100%);
+        }
+        .tab-btn.active {
+            border-bottom: 3px solid #FF2D20;
+            color: #FF2D20;
+            font-weight: 700;
+        }
+        .sim-step {
+            transition: all 0.3s ease;
+        }
+        .sim-step.active-step {
+            transform: scale(1.02);
+            border-color: #3b82f6;
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
+        }
+        /* Custom scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col selection:bg-laravel selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-950/80 backdrop-blur border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-laravel text-white p-2 rounded-xl flex items-center justify-center shadow-lg shadow-laravel/30">
+                        <i class="fa-brands fa-laravel text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg text-white leading-tight">Modul Interaktif MVC Laravel</h1>
+                        <p class="text-xs text-slate-400">Kelas XII RPL SMK • Bab 1: Konsep Dasar MVC</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-2">
+                    <span class="px-3 py-1 bg-slate-800 text-slate-300 rounded-full text-xs font-medium border border-slate-700">
+                        <i class="fa-solid fa-graduation-cap text-laravel mr-1"></i> Pemrograman Web & Bergerak
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-16 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex space-x-8 overflow-x-auto no-scrollbar">
+                <button onclick="switchTab('materi')" id="tab-materi" class="tab-btn active py-4 px-2 text-sm font-medium whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-book-open"></i> 1. Materi & Konsep
+                </button>
+                <button onclick="switchTab('analogi')" id="tab-analogi" class="tab-btn py-4 px-2 text-sm font-medium whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-utensils"></i> 2. Visual & Analogi Restoran
+                </button>
+                <button onclick="switchTab('flow')" id="tab-flow" class="tab-btn py-4 px-2 text-sm font-medium whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-diagram-project"></i> 3. Simulasi Alur Request
+                </button>
+                <button onclick="switchTab('kuis')" id="tab-kuis" class="tab-btn py-4 px-2 text-sm font-medium whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i> 4. Latihan Soal Evaluasi
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- TAB 1: MATERI LENGKAP -->
+        <section id="sec-materi" class="space-y-8">
+            <!-- Hero Banner -->
+            <div class="gradient-bg p-8 rounded-3xl border border-slate-700/50 shadow-2xl relative overflow-hidden">
+                <div class="relative z-10 max-w-3xl">
+                    <span class="inline-block px-3 py-1 bg-laravel/20 text-laravel border border-laravel/30 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">
+                        BAB 1 — ARSITEKTUR PERANGKAT LUNAK
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Memahami Konsep Model-View-Controller (MVC) di Laravel</h2>
+                    <p class="text-slate-300 text-base leading-relaxed">
+                        Sebelum mengenal kerangka kerja modern, aplikasi dibuat secara monolithic unstructured (*spaghetti code*). Pelajari bagaimana pola arsitektur MVC memisahkan tanggung jawab program untuk menghasilkan aplikasi yang rapi, aman, dan mudah dirawat.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Main Content -->
+                <div class="lg:col-span-2 space-y-8">
+                    
+                    <!-- Card: Spaghetti Code vs MVC -->
+                    <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg">
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Mengapa Harus MVC? Memahami "Spaghetti Code"
+                        </h3>
+                        <p class="text-slate-300 mb-4 leading-relaxed">
+                            Pada pemrograman PHP tradisional tanpa framework, pemrogram sering mencampur kode HTML (tampilan), query SQL (database), dan logika pemrosesan dalam satu file tunggal. Hal ini dinamakan <strong>Spaghetti Code</strong>.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
+                            <div class="bg-red-950/40 border border-red-800/50 p-4 rounded-xl">
+                                <i class="fa-solid fa-wrench text-red-400 text-xl mb-2"></i>
+                                <h4 class="font-bold text-red-200 text-sm">Sulit Dirawat</h4>
+                                <p class="text-xs text-slate-400 mt-1">Perubahan kecil pada desain HTML dapat merusak query database.</p>
+                            </div>
+                            <div class="bg-amber-950/40 border border-amber-800/50 p-4 rounded-xl">
+                                <i class="fa-solid fa-users-slash text-amber-400 text-xl mb-2"></i>
+                                <h4 class="font-bold text-amber-200 text-sm">Kolaborasi Buruk</h4>
+                                <p class="text-xs text-slate-400 mt-1">Developer Frontend dan Backend berebut mengedit file yang sama (*merge conflict*).</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-700 p-4 rounded-xl">
+                                <i class="fa-solid fa-ban text-slate-400 text-xl mb-2"></i>
+                                <h4 class="font-bold text-slate-200 text-sm">Tidak Reusable</h4>
+                                <p class="text-xs text-slate-400 mt-1">Logika query SQL ditulis berulang kali di setiap file halaman baru.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-950/30 border border-emerald-800/50 p-4 rounded-xl mt-4">
+                            <h4 class="font-bold text-emerald-300 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-lightbulb"></i> Solusi: Separation of Concerns (SoC)
+                            </h4>
+                            <p class="text-xs text-slate-300 mt-1">
+                                Solusi terbaik adalah menerapkan prinsip <strong>SoC</strong>, yaitu memisahkan program menjadi modul-modul independen sesuai dengan fungsi dasarnya: Data, Logika, dan Tampilan.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Card: Anatomi MVC -->
+                    <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg">
+                        <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                            <i class="fa-solid fa-cubes text-laravel"></i> Anatomi Komponen Utama MVC Laravel
+                        </h3>
+
+                        <div class="space-y-6">
+                            <!-- Model -->
+                            <div class="p-4 bg-slate-900/80 border-l-4 border-emerald-500 rounded-r-xl space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-emerald-400 text-base flex items-center gap-2">
+                                        <i class="fa-solid fa-database"></i> 1. Model (M)
+                                    </h4>
+                                    <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-full border border-emerald-500/20 font-semibold">Data & Logika Bisnis</span>
+                                </div>
+                                <p class="text-sm text-slate-300 leading-relaxed">
+                                    Bertanggung jawab mengelola data, aturan bisnis (*business logic*), dan interaksi langsung dengan database melalui Eloquent ORM atau Query Builder.
+                                </p>
+                                <div class="text-xs text-slate-400 bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono">
+                                    📁 Lokasi: app/Models/Pengaduan.php<br>
+                                    💡 Aturan: Dilarang menghasilkan output HTML atau menerima HTTP request langsung.
+                                </div>
+                            </div>
+
+                            <!-- View -->
+                            <div class="p-4 bg-slate-900/80 border-l-4 border-sky-500 rounded-r-xl space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-sky-400 text-base flex items-center gap-2">
+                                        <i class="fa-solid fa-desktop"></i> 2. View (V)
+                                    </h4>
+                                    <span class="text-xs bg-sky-500/10 text-sky-400 px-2.5 py-1 rounded-full border border-sky-500/20 font-semibold">User Interface</span>
+                                </div>
+                                <p class="text-sm text-slate-300 leading-relaxed">
+                                    Bertanggung jawab menyajikan tampilan akhir kepada pengguna. Di Laravel, View ditulis menggunakan <strong>Blade Template Engine</strong> (`.blade.php`).
+                                </p>
+                                <div class="text-xs text-slate-400 bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono">
+                                    📁 Lokasi: resources/views/pengaduan/index.blade.php<br>
+                                    💡 Aturan: Tidak boleh melakukan query database langsung atau logika bisnis rumit.
+                                </div>
+                            </div>
+
+                            <!-- Controller -->
+                            <div class="p-4 bg-slate-900/80 border-l-4 border-amber-500 rounded-r-xl space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-amber-400 text-base flex items-center gap-2">
+                                        <i class="fa-solid fa-brain"></i> 3. Controller (C)
+                                    </h4>
+                                    <span class="text-xs bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full border border-amber-500/20 font-semibold">Lalu Lintas & Pemrosesan</span>
+                                </div>
+                                <p class="text-sm text-slate-300 leading-relaxed">
+                                    Otak pengendali yang menerima input dari pengguna (via Route), meminta data ke Model, lalu menentukan View mana yang ditampilkan sebagai balasan.
+                                </p>
+                                <div class="text-xs text-slate-400 bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono">
+                                    📁 Lokasi: app/Http/Controllers/PengaduanController.php<br>
+                                    💡 Aturan: Harus "Skinny" (ramping), menyerahkan tugas query mendalam pada Model.
+                                </div>
+                            </div>
+
+                            <!-- Router Extra -->
+                            <div class="p-4 bg-slate-900/80 border-l-4 border-purple-500 rounded-r-xl space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-purple-400 text-base flex items-center gap-2">
+                                        <i class="fa-solid fa-route"></i> Pintu Gerbang: Router
+                                    </h4>
+                                    <span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-full border border-purple-500/20 font-semibold">Pemeta URL</span>
+                                </div>
+                                <p class="text-sm text-slate-300 leading-relaxed">
+                                    Memetakan URL yang diakses browser (GET, POST, PUT, DELETE) ke metode Controller yang tepat.
+                                </p>
+                                <div class="text-xs text-slate-400 bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono">
+                                    📁 Lokasi: routes/web.php
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Sidebar Summary & Benefits -->
+                <div class="space-y-6">
+                    <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg sticky top-36">
+                        <h4 class="font-bold text-white mb-4 flex items-center gap-2 text-base">
+                            <i class="fa-solid fa-check-double text-emerald-400"></i> Manfaat Utama MVC
+                        </h4>
+                        <ul class="space-y-3 text-sm text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-1 shrink-0"></i>
+                                <span><strong>Pengembangan Paralel:</strong> Frontend & Backend dev bekerja serentak tanpa saling bentrok.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-1 shrink-0"></i>
+                                <span><strong>Kemudahan Maintenance:</strong> Bug pada database langsung ditangani di Model, bug tampilan di View.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-1 shrink-0"></i>
+                                <span><strong>Kode Reusable:</strong> Satu Model dapat melayani banyak Controller & View berbeda.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-1 shrink-0"></i>
+                                <span><strong>Struktur Rapi:</strong> Ribuan berkas tetap terorganisir sesuai kategorinya.</span>
+                            </li>
+                        </ul>
+
+                        <div class="mt-6 pt-6 border-t border-slate-700/80">
+                            <button onclick="switchTab('analogi')" class="w-full py-3 bg-laravel hover:bg-laravel/90 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
+                                Lanjut: Lihat Analogi Restoran <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: ANALOGI RESTORAN -->
+        <section id="sec-analogi" class="hidden space-y-8">
+            <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg">
+                <div class="text-center max-w-2xl mx-auto mb-8">
+                    <span class="px-3 py-1 bg-amber-500/10 text-amber-400 rounded-full text-xs font-semibold uppercase border border-amber-500/20">
+                        Memahami MVC dengan Mudah
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-2">Analogi Sistem Restoran Modern</h2>
+                    <p class="text-slate-400 text-sm mt-2">
+                        Klik pada setiap elemen di bawah ini untuk melihat bagaimana komponen MVC bekerja layaknya operasional sebuah restoran.
+                    </p>
+                </div>
+
+                <!-- Interactive Analogy Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 my-8">
+                    
+                    <!-- Element: User / Pelanggan -->
+                    <div onclick="showAnalogiDetail('user')" class="sim-step bg-slate-900 border border-slate-700 hover:border-slate-500 p-5 rounded-2xl text-center cursor-pointer">
+                        <div class="w-14 h-14 mx-auto bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center text-2xl mb-3">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">User / Browser</h3>
+                        <p class="text-xs text-indigo-400 font-semibold mt-1">Pelanggan Restoran</p>
+                    </div>
+
+                    <!-- Element: Route / Buku Menu -->
+                    <div onclick="showAnalogiDetail('route')" class="sim-step bg-slate-900 border border-slate-700 hover:border-purple-500 p-5 rounded-2xl text-center cursor-pointer">
+                        <div class="w-14 h-14 mx-auto bg-purple-500/20 text-purple-400 rounded-full flex items-center justify-center text-2xl mb-3">
+                            <i class="fa-solid fa-book-open text-purple-400"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">Router (`routes`)</h3>
+                        <p class="text-xs text-purple-400 font-semibold mt-1">Buku Menu / Kasir</p>
+                    </div>
+
+                    <!-- Element: Controller / Waiter -->
+                    <div onclick="showAnalogiDetail('controller')" class="sim-step bg-slate-900 border border-slate-700 hover:border-amber-500 p-5 rounded-2xl text-center cursor-pointer">
+                        <div class="w-14 h-14 mx-auto bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center text-2xl mb-3">
+                            <i class="fa-solid fa-user-ninja"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">Controller</h3>
+                        <p class="text-xs text-amber-400 font-semibold mt-1">Pelayan / Waiter</p>
+                    </div>
+
+                    <!-- Element: Model / Koki -->
+                    <div onclick="showAnalogiDetail('model')" class="sim-step bg-slate-900 border border-slate-700 hover:border-emerald-500 p-5 rounded-2xl text-center cursor-pointer">
+                        <div class="w-14 h-14 mx-auto bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl mb-3">
+                            <i class="fa-solid fa-kitchen-set"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">Model</h3>
+                        <p class="text-xs text-emerald-400 font-semibold mt-1">Koki & Dapur/Gudang</p>
+                    </div>
+
+                    <!-- Element: View / Piring -->
+                    <div onclick="showAnalogiDetail('view')" class="sim-step bg-slate-900 border border-slate-700 hover:border-sky-500 p-5 rounded-2xl text-center cursor-pointer">
+                        <div class="w-14 h-14 mx-auto bg-sky-500/20 text-sky-400 rounded-full flex items-center justify-center text-2xl mb-3">
+                            <i class="fa-solid fa-utensils"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">View</h3>
+                        <p class="text-xs text-sky-400 font-semibold mt-1">Piring & Tata Hiasan</p>
+                    </div>
+
+                </div>
+
+                <!-- Detail Modal Box -->
+                <div id="analogi-detail-box" class="bg-slate-900/90 border border-slate-700 rounded-2xl p-6 text-slate-200">
+                    <!-- Default State Message -->
+                    <p class="text-center text-slate-400 text-sm italic">
+                        <i class="fa-solid fa-hand-pointer mr-1"></i> Klik salah satu kartu elemen restoran di atas untuk menampilkan detail perannya dalam arsitektur MVC!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg overflow-x-auto">
+                <h3 class="text-lg font-bold text-white mb-4">Tabel Pemetaan Komponen MVC vs Restoran</h3>
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="bg-slate-900 text-slate-300 border-b border-slate-700">
+                            <th class="p-3">Komponen MVC</th>
+                            <th class="p-3">Elemen Restoran</th>
+                            <th class="p-3">Peran & Tanggung Jawab dalam Sistem</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-700/50 text-slate-300">
+                        <tr class="hover:bg-slate-700/20">
+                            <td class="p-3 font-semibold text-indigo-400">User / Browser</td>
+                            <td class="p-3">Pelanggan Restoran</td>
+                            <td class="p-3">Datang ke restoran, memilih menu, dan memesan makanan (*HTTP Request*).</td>
+                        </tr>
+                        <tr class="hover:bg-slate-700/20">
+                            <td class="p-3 font-semibold text-purple-400">Router (`routes/web.php`)</td>
+                            <td class="p-3">Buku Menu / Resepsionis</td>
+                            <td class="p-3">Mengarahkan alamat pesanan pelanggan sesuai ke pelayan/controller yang tepat.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-700/20">
+                            <td class="p-3 font-semibold text-amber-400">Controller</td>
+                            <td class="p-3">Pelayan / Waiter</td>
+                            <td class="p-3">Menerima pesanan, menyerahkan kebutuhan ke dapur/koki, mengambil masakan, lalu menyajikan.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-700/20">
+                            <td class="p-3 font-semibold text-emerald-400">Model</td>
+                            <td class="p-3">Koki / Dapur & Gudang Data</td>
+                            <td class="p-3">Mengambil bahan mentah (database), mengolah sesuai resep (logika), dan memastikan kualitas.</td>
+                        </tr>
+                        <tr class="hover:bg-slate-700/20">
+                            <td class="p-3 font-semibold text-sky-400">View (`.blade.php`)</td>
+                            <td class="p-3">Piring Penyajian / Hiasan</td>
+                            <td class="p-3">Mengemas hasil masakan agar tampil cantik, menarik, dan mudah disantap pelanggan.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 3: SIMULASI ALUR REQUEST -->
+        <section id="sec-flow" class="hidden space-y-8">
+            <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Simulasi Alur Request-Response HTTP Laravel</h2>
+                        <p class="text-slate-400 text-sm">Pelajari langkah demi langkah bagaimana data berpindah dari browser pengguna hingga kembali dirender.</p>
+                    </div>
+                    <button onclick="startFlowSimulation()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition flex items-center gap-2 self-start md:self-auto shadow-lg shadow-blue-600/30">
+                        <i class="fa-solid fa-play"></i> Jalankan Simulasi Otomatis
+                    </button>
+                </div>
+
+                <!-- Step Navigator Bar -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 my-6">
+                    <button onclick="setFlowStep(1)" id="flow-btn-1" class="flow-step-btn py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300 font-semibold hover:border-blue-500">
+                        1. Request
+                    </button>
+                    <button onclick="setFlowStep(2)" id="flow-btn-2" class="flow-step-btn py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300 font-semibold hover:border-blue-500">
+                        2. Route
+                    </button>
+                    <button onclick="setFlowStep(3)" id="flow-btn-3" class="flow-step-btn py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300 font-semibold hover:border-blue-500">
+                        3. Controller
+                    </button>
+                    <button onclick="setFlowStep(4)" id="flow-btn-4" class="flow-step-btn py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300 font-semibold hover:border-blue-500">
+                        4. Model Call
+                    </button>
+                    <button onclick="setFlowStep(5)" id="flow-btn-5" class="flow-step-btn py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300 font-semibold hover:border-blue-500">
+                        5. Database
+                    </button>
+                    <button onclick="setFlowStep(6)" id="flow-btn-6" class="flow-step-btn py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300 font-semibold hover:border-blue-500">
+                        6. Return Data
+                    </button>
+                    <button onclick="setFlowStep(7)" id="flow-btn-7" class="flow-step-btn py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300 font-semibold hover:border-blue-500">
+                        7. Render View
+                    </button>
+                    <button onclick="setFlowStep(8)" id="flow-btn-8" class="flow-step-btn py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300 font-semibold hover:border-blue-500">
+                        8. Response
+                    </button>
+                </div>
+
+                <!-- Simulation Visual Canvas -->
+                <div id="flow-canvas" class="bg-slate-950 border border-slate-800 rounded-2xl p-6 min-h-[320px] flex flex-col justify-between relative overflow-hidden">
+                    
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                            <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                            <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                            <span class="text-xs text-slate-500 font-mono ml-2">http://sekolah.sch.id/pengaduan</span>
+                        </div>
+                        <span id="flow-step-badge" class="px-3 py-1 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-full text-xs font-bold">
+                            Langkah 1 dari 8
+                        </span>
+                    </div>
+
+                    <!-- Flow Active Display -->
+                    <div id="flow-display-content" class="my-6 space-y-4">
+                        <!-- Content dynamically updated via JS -->
+                    </div>
+
+                    <!-- Step Controls -->
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-800">
+                        <button onclick="prevFlowStep()" id="flow-prev-btn" class="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-bold rounded-lg hover:bg-slate-700 disabled:opacity-40">
+                            <i class="fa-solid fa-chevron-left mr-1"></i> Sebelumnya
+                        </button>
+                        <button onclick="nextFlowStep()" id="flow-next-btn" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-500">
+                            Selanjutnya <i class="fa-solid fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: LATIHAN SOAL EVALUASI -->
+        <section id="sec-kuis" class="hidden space-y-8">
+            
+            <!-- Quiz Intro Banner -->
+            <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-lg">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <span class="px-3 py-1 bg-laravel/20 text-laravel border border-laravel/30 rounded-full text-xs font-semibold">
+                            EVALUASI BAB 1 — LENGKAP
+                        </span>
+                        <h2 class="text-2xl font-bold text-white mt-2">Uji Pemahaman Materi MVC Laravel</h2>
+                        <p class="text-slate-400 text-sm mt-1">
+                            Total 20 Soal/Set (5 Pilihan Ganda, 5 PG Kompleks, 5 Benar/Salah, & 5 Set Menjodohkan @6 Kolom).
+                        </p>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-center shrink-0">
+                        <span class="text-xs text-slate-400 block font-medium">Skor Saat Ini</span>
+                        <span id="score-display" class="text-2xl font-black text-emerald-400">0 / 100</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Category Selector Tabs -->
+            <div class="flex space-x-3 border-b border-slate-800 pb-2 overflow-x-auto no-scrollbar">
+                <button onclick="switchQuizCategory('pg')" id="quiz-tab-pg" class="px-4 py-2 text-xs font-bold rounded-xl bg-laravel text-white whitespace-nowrap shadow-md">
+                    Bagian A: Pilihan Ganda (5 Soal)
+                </button>
+                <button onclick="switchQuizCategory('kompleks')" id="quiz-tab-kompleks" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap">
+                    Bagian B: PG Kompleks (5 Soal)
+                </button>
+                <button onclick="switchQuizCategory('bs')" id="quiz-tab-bs" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap">
+                    Bagian C: Benar / Salah (5 Soal)
+                </button>
+                <button onclick="switchQuizCategory('jodoh')" id="quiz-tab-jodoh" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap">
+                    Bagian D: Menjodohkan (5 Set Soal)
+                </button>
+            </div>
+
+            <!-- Quiz Questions Container -->
+            <div id="quiz-questions-container" class="space-y-6">
+                <!-- Dynamically Populated by JS -->
+            </div>
+
+            <!-- Quiz Submit & Reset Bar -->
+            <div class="bg-slate-800/90 border border-slate-700 p-6 rounded-2xl flex flex-wrap items-center justify-between gap-4">
+                <button onclick="resetQuiz()" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-bold text-sm rounded-xl transition flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-left"></i> Reset Jawaban
+                </button>
+                <button onclick="submitQuiz()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl transition shadow-lg shadow-emerald-600/30 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Semua Jawaban
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Custom Result Modal (Replacement for alert) -->
+    <div id="result-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-lg w-full p-6 shadow-2xl text-center space-y-5 animate-fade-in">
+            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-3xl mx-auto border border-emerald-500/30">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <div>
+                <h3 class="text-2xl font-extrabold text-white">Hasil Evaluasi Selesai!</h3>
+                <p class="text-sm text-slate-400 mt-1">Berikut ringkasan performa pemahaman materi MVC Laravel Anda.</p>
+            </div>
+            <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
+                <div class="text-4xl font-black text-emerald-400" id="modal-score-val">0 / 100</div>
+                <div class="text-xs text-slate-400 font-mono" id="modal-points-detail">Poin Terkumpul: 0 dari 20 Poin Maksimal</div>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed" id="modal-feedback-msg">
+                Sangat Bagus! Anda telah memahami konsep Model, View, Controller, Routing, dan Arsitektur Laravel dengan komprehensif.
+            </p>
+            <button onclick="closeResultModal()" class="w-full py-3 bg-laravel hover:bg-laravel/90 text-white font-bold rounded-xl shadow-lg transition">
+                Tutup & Periksa Pembahasan
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            <p>Modul Pembelajaran Interaktif Laravel MVC • Dikembangkan khusus untuk Kompetensi Keahlian Rekayasa Perangkat Lunak (RPL) SMK Kelas XII.</p>
+        </div>
+    </footer>
+
+    <!-- Application Logic & Data Script -->
+    <script>
+        // --- 1. TAB SWITCHING LOGIC ---
+        function switchTab(tabName) {
+            document.querySelectorAll('section[id^="sec-"]').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(`sec-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- 2. ANALOGY DETAIL INTERACTIVITY ---
+        const analogiData = {
+            user: {
+                title: "User / Browser (Pelanggan Restoran)",
+                icon: "fa-user-tie text-indigo-400",
+                color: "indigo",
+                desc: "Pelanggan datang ke restoran dengan kebutuhan tertentu. Di aplikasi web, Pelanggan adalah Browser Pengguna yang mengetikkan alamat URL (misal: <code>/pengaduan</code>) untuk meminta informasi atau mengirim form."
+            },
+            route: {
+                title: "Router / routes/web.php (Buku Menu & Resepsionis)",
+                icon: "fa-book-open text-purple-400",
+                color: "purple",
+                desc: "Resepsionis memegang daftar menu pesanan. Router menerima alamat URL dan method HTTP dari browser, lalu mencocokkannya dengan daftar rute untuk diposisikan ke Pelayan (Controller) yang tepat."
+            },
+            controller: {
+                title: "Controller (Pelayan / Waiter)",
+                icon: "fa-user-ninja text-amber-400",
+                color: "amber",
+                desc: "Pelayan menerima instruksi dari menu, mendatangi Dapur (Model) untuk meminta bahan makanan yang sudah dimasak, lalu menyerahkannya ke bagian Penyajian (View) untuk diantar kembali ke meja Pelanggan."
+            },
+            model: {
+                title: "Model (Koki & Dapur / Gudang Data)",
+                icon: "fa-kitchen-set text-emerald-400",
+                color: "emerald",
+                desc: "Koki mengolah bahan mentah dari lemari es (Database MySQL). Koki memastikan standar resep (aturan bisnis/validasi) terpenuhi dan mengembalikan masakan siap saji dalam bentuk Objek Data."
+            },
+            view: {
+                title: "View / Blade Engine (Piring Penyajian & Tata Hias)",
+                icon: "fa-utensils text-sky-400",
+                color: "sky",
+                desc: "Bagian penyajian menata makanan di atas piring agar cantik, menambahkan garnish (CSS/JS), dan menyajikannya ke layar pelanggan sehingga siap dinikmati sebagai kode HTML murni."
+            }
+        };
+
+        function showAnalogiDetail(key) {
+            const data = analogiData[key];
+            const box = document.getElementById('analogi-detail-box');
+            box.innerHTML = `
+                <div class="flex items-start space-x-4">
+                    <div class="p-3 bg-slate-800 rounded-xl text-2xl shrink-0">
+                        <i class="fa-solid ${data.icon}"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white text-base">${data.title}</h4>
+                        <p class="text-sm text-slate-300 mt-2 leading-relaxed">${data.desc}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- 3. HTTP FLOW SIMULATION LOGIC ---
+        let currentFlowStep = 1;
+        let flowTimer = null;
+
+        const flowStepsData = [
+            {
+                step: 1,
+                title: "1. HTTP Request dikirim oleh Browser",
+                code: "GET http://sekolah.sch.id/pengaduan",
+                desc: "Siswa/Pengguna mengetikkan URL di browser atau mengklik tautan 'Daftar Pengaduan'. Browser mengirimkan HTTP Request metode GET ke server Laravel."
+            },
+            {
+                step: 2,
+                title: "2. Routing Memetakan URL (routes/web.php)",
+                code: "Route::get('/pengaduan', [PengaduanController::class, 'index']);",
+                desc: "Laravel menerima permintaan, memeriksa file `routes/web.php`, dan menemukan bahwa rute `/pengaduan` harus ditangani oleh `PengaduanController` method `index()`."
+            },
+            {
+                step: 3,
+                title: "3. Controller Mengambil Alih Kendali",
+                code: "public function index() { ... }",
+                desc: "Method `index()` pada `PengaduanController` dieksekusi. Controller mendeteksi bahwa halaman ini membutuhkan daftar laporan pengaduan dari database."
+            },
+            {
+                step: 4,
+                title: "4. Controller Memanggil Model",
+                code: "$pengaduan = Pengaduan::with('sarana')->get();",
+                desc: "Controller memanggil kelas Model `Pengaduan` untuk meminta data laporan pengaduan lengkap beserta data sarana terkait."
+            },
+            {
+                step: 5,
+                title: "5. Model Mengeksekusi Query ke Database MySQL",
+                code: "SELECT * FROM pengaduans INNER JOIN saranas ON ...",
+                desc: "Model menerjemahkan perintah Eloquent menjadi Query SQL murni dan mengeksekusinya ke server Database MySQL."
+            },
+            {
+                step: 6,
+                title: "6. Database Mengembalikan Data ke Model & Controller",
+                code: "Collection [#1 Pengaduan, #2 Pengaduan, ...]",
+                desc: "Database mengembalikan baris-baris data yang kemudian diubah oleh Model menjadi kumpulan objek (*Eloquent Collection*) dan diserahkan kembali ke Controller."
+            },
+            {
+                step: 7,
+                title: "7. Controller Menyerahkan Data ke View (Blade Engine)",
+                code: "return view('pengaduan.index', compact('pengaduan'));",
+                desc: "Controller memanggil file tampilan `resources/views/pengaduan/index.blade.php` dan menyuntikkan data pengaduan ke dalam berkas Blade tersebut."
+            },
+            {
+                step: 8,
+                title: "8. Blade Merender HTML & Browser Menampilkan Halaman",
+                code: "HTTP 200 OK (Content-Type: text/html)",
+                desc: "Blade Template Engine menggabungkan struktur HTML dan data, mengubahnya menjadi string HTML murni, lalu mengembalikannya ke browser pengguna."
+            }
+        ];
+
+        function setFlowStep(stepNum) {
+            currentFlowStep = stepNum;
+            const stepData = flowStepsData[stepNum - 1];
+            
+            // Update buttons
+            document.querySelectorAll('.flow-step-btn').forEach((btn, idx) => {
+                if(idx + 1 === stepNum) {
+                    btn.classList.add('bg-blue-600', 'text-white', 'border-blue-400');
+                    btn.classList.remove('bg-slate-900', 'text-slate-300');
+                } else {
+                    btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-400');
+                    btn.classList.add('bg-slate-900', 'text-slate-300');
+                }
+            });
+
+            // Update Badge
+            document.getElementById('flow-step-badge').innerText = `Langkah ${stepNum} dari 8`;
+
+            // Update Canvas Content
+            document.getElementById('flow-display-content').innerHTML = `
+                <div class="space-y-3 animate-fade-in">
+                    <h3 class="text-lg font-bold text-blue-400 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-right"></i> ${stepData.title}
+                    </h3>
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 font-mono text-xs text-emerald-400 overflow-x-auto">
+                        ${stepData.code}
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed pt-2">
+                        ${stepData.desc}
+                    </p>
+                </div>
+            `;
+
+            // Disable / Enable prev/next buttons
+            document.getElementById('flow-prev-btn').disabled = (stepNum === 1);
+            document.getElementById('flow-next-btn').disabled = (stepNum === 8);
+        }
+
+        function nextFlowStep() {
+            if (currentFlowStep < 8) setFlowStep(currentFlowStep + 1);
+        }
+
+        function prevFlowStep() {
+            if (currentFlowStep > 1) setFlowStep(currentFlowStep - 1);
+        }
+
+        function startFlowSimulation() {
+            if (flowTimer) clearInterval(flowTimer);
+            let step = 1;
+            setFlowStep(step);
+            flowTimer = setInterval(() => {
+                step++;
+                if (step > 8) {
+                    clearInterval(flowTimer);
+                } else {
+                    setFlowStep(step);
+                }
+            }, 2500);
+        }
+
+        // --- 4. QUIZ ENGINE DATA & LOGIC ---
+        const quizData = {
+            pg: [
+                {
+                    id: 'pg1',
+                    question: '1. Komponen dalam arsitektur MVC yang memiliki tanggung jawab utama untuk mengelola logika bisnis, manipulasi data, dan berinteraksi langsung dengan database adalah...',
+                    options: ['A. View', 'B. Controller', 'C. Router', 'D. Model', 'E. Middleware'],
+                    correct: 'D',
+                    explanation: 'Model adalah komponen yang merepresentasikan struktur data dan aturan bisnis serta berinteraksi langsung dengan Database.'
+                },
+                {
+                    id: 'pg2',
+                    question: '2. Perhatikan alur kerja Laravel berikut: Browser Request -> Route -> X -> Model -> Y -> View -> Browser Response. Komponen yang tepat untuk mengisi titik-titik X dan Y secara berurutan adalah...',
+                    options: ['A. View dan Controller', 'B. Controller dan Controller', 'C. Controller dan View', 'D. Middleware dan Model', 'E. Model dan Controller'],
+                    correct: 'B',
+                    explanation: 'Request diterima Route -> diarahkan ke Controller (X) -> Controller memanggil Model -> Model kembalikan data ke Controller (Y) -> Controller kirim data ke View.'
+                },
+                {
+                    id: 'pg3',
+                    question: '3. Dalam analogi sistem restoran modern, komponen MVC yang diperankan oleh Pelayan / Waiter yang bertugas menerima pesanan dan menyampaikan ke dapur adalah...',
+                    options: ['A. Model', 'B. View', 'C. Controller', 'D. Database', 'E. Blade Engine'],
+                    correct: 'C',
+                    explanation: 'Pelayan/Waiter bertindak sebagai Controller yang menghubungkan pelanggan (User) dengan dapur (Model).'
+                },
+                {
+                    id: 'pg4',
+                    question: '4. Manakah berkas di Laravel yang bertugas sebagai pintu gerbang utama untuk memetakan URL dan menentukan Controller mana yang akan memproses permintaan?',
+                    options: ['A. app/Http/Controllers/Controller.php', 'B. config/database.php', 'C. routes/web.php', 'D. resources/views/welcome.blade.php', 'E. bootstrap/app.php'],
+                    correct: 'C',
+                    explanation: 'Berkas `routes/web.php` memetakan rute URL web ke Controller & method terkait.'
+                },
+                {
+                    id: 'pg5',
+                    question: '5. Salah satu alasan utama mengapa pendekatan Spaghetti Code harus ditinggalkan dan beralih ke MVC adalah...',
+                    options: ['A. Spaghetti Code membuat ukuran database menjadi dua kali lipat.', 'B. MVC membuat penulisan kode HTML menjadi tidak diperlukan lagi.', 'C. Spaghetti Code mencampur logika program dan tampilan sehingga sulit dirawat.', 'D. MVC hanya bisa dijalankan pada sistem operasi Linux.', 'E. Spaghetti Code tidak mendukung penggunaan JavaScript.'],
+                    correct: 'C',
+                    explanation: 'Spaghetti code mencampur SQL, HTML, dan logika dalam satu file sehingga menyulitkan maintenance dan kerja tim.'
+                }
+            ],
+            kompleks: [
+                {
+                    id: 'k1',
+                    question: '6. Manakah dari pernyataan berikut yang BENAR mengenai peran dan karakteristik dari Model pada Laravel? (Pilih semua yang benar)',
+                    options: [
+                        { val: 'A', text: 'A. Model digunakan untuk mengatur tampilan UI menggunakan CSS dan HTML.' },
+                        { val: 'B', text: 'B. Model bertugas menjalankan query database dan menerapkan aturan logika bisnis.' },
+                        { val: 'C', text: 'C. Model di Laravel biasanya direpresentasikan dalam bentuk kelas PHP Eloquent.' },
+                        { val: 'D', text: 'D. Model menerima request HTTP dari browser secara langsung.' },
+                        { val: 'E', text: 'E. Satu kelas Model secara default mewakili satu tabel dalam database.' }
+                    ],
+                    correct: ['B', 'C', 'E'],
+                    explanation: 'Jawaban benar B, C, dan E. Model tidak mengurus HTML (A) dan tidak menerima HTTP request langsung (D).'
+                },
+                {
+                    id: 'k2',
+                    question: '7. Manakah tindakan yang DILARANG atau tidak disarankan dilakukan di dalam View menurut prinsip dasar MVC? (Pilih semua yang benar)',
+                    options: [
+                        { val: 'A', text: 'A. Menuliskan struktur tag HTML seperti tag table, tag div, dan tag h1.' },
+                        { val: 'B', text: 'B. Melakukan query SQL langsung ke database seperti DB::select().' },
+                        { val: 'C', text: 'C. Mengarahkan form input ke suatu rute URL.' },
+                        { val: 'D', text: 'D. Menuliskan logika bisnis kompleks dan perhitungan validasi data utama.' },
+                        { val: 'E', text: 'E. Menampilkan nilai variabel data yang dikirimkan oleh Controller.' }
+                    ],
+                    correct: ['B', 'D'],
+                    explanation: 'View bertugas menampilkan UI, sehingga dilarang melakukan query SQL langsung (B) dan mengolah logika bisnis rumit (D).'
+                },
+                {
+                    id: 'k3',
+                    question: '8. Pernyataan yang tepat mengenai manfaat penerapan arsitektur MVC bagi tim pengembang aplikasi adalah... (Pilih semua yang benar)',
+                    options: [
+                        { val: 'A', text: 'A. Developer Frontend dan Backend dapat bekerja bersamaan tanpa saling menimpa kode.' },
+                        { val: 'B', text: 'B. Aplikasi otomatis menjadi bebas dari semua jenis bug.' },
+                        { val: 'C', text: 'C. Kode program menjadi lebih rapi dan terstruktur berdasarkan fungsinya (SoC).' },
+                        { val: 'D', text: 'D. Menghilangkan kebutuhan untuk menggunakan database relasional.' },
+                        { val: 'E', text: 'E. Memudahkan proses maintenance dan pengembangan fitur baru di masa mendatang.' }
+                    ],
+                    correct: ['A', 'C', 'E'],
+                    explanation: 'Pernyataan B salah (MVC tidak menjamin bebas bug otomatis) dan D salah (database tetap dibutuhkan).'
+                },
+                {
+                    id: 'k4',
+                    question: '9. Komponen apa saja yang terlibat langsung saat Controller memproses penambahan data baru ke dalam database melalui form input web? (Pilih semua yang benar)',
+                    options: [
+                        { val: 'A', text: 'A. Router (menerima rute metode POST)' },
+                        { val: 'B', text: 'B. View (menampilkan form masukan data)' },
+                        { val: 'C', text: 'C. Model (menyimpan data baru ke tabel database)' },
+                        { val: 'D', text: 'D. Middleware (memeriksa otentikasi jika diperlukan)' },
+                        { val: 'E', text: 'E. Blade Compiler (mengubah kode PHP menjadi database SQL)' }
+                    ],
+                    correct: ['A', 'B', 'C', 'D'],
+                    explanation: 'Semua komponen A, B, C, D terlibat. E salah karena Blade compiler tidak merubah PHP menjadi SQL.'
+                },
+                {
+                    id: 'k5',
+                    question: '10. Karakteristik dari Controller yang ideal (Clean Controller) dalam framework Laravel adalah... (Pilih semua yang benar)',
+                    options: [
+                        { val: 'A', text: 'A. Bersifat Skinny (ramping), yaitu hanya mengatur alur pemrosesan.' },
+                        { val: 'B', text: 'B. Berisi ribuan baris perintah SQL murni tanpa menggunakan fungsi Model.' },
+                        { val: 'C', text: 'C. Menerima data masukan (request), memanggil Model, dan menentukan View respons.' },
+                        { val: 'D', text: 'D. Bertanggung jawab langsung dalam menggambar komponen CSS.' },
+                        { val: 'E', text: 'E. Terletak pada direktori app/Http/Controllers.' }
+                    ],
+                    correct: ['A', 'C', 'E'],
+                    explanation: 'Clean Controller berprinsip Skinny Controller, mengendalikan alur, dan terletak di directory app/Http/Controllers.'
+                }
+            ],
+            bs: [
+                {
+                    id: 'bs1',
+                    question: '11. Sintaks Rute Route::post(\'/simpan\', [PengaduanController::class, \'store\']) digunakan untuk menangani pengambilan data dari database dan menampilkannya di browser.',
+                    correct: 'Salah',
+                    explanation: 'Metode POST digunakan untuk mengirim/menyimpan data baru, sedangkan untuk mengambil dan menampilkan data digunakan metode GET.'
+                },
+                {
+                    id: 'bs2',
+                    question: '12. Blade template engine di Laravel mengizinkan penulisan sintaksis PHP yang lebih bersih menggunakan direktif seperti @if, @foreach, dan @extends.',
+                    correct: 'Benar',
+                    explanation: 'Blade mempercantik penulisan sintaks PHP pada HTML dengan direktif bersimbol `@` agar lebih mudah dibaca.'
+                },
+                {
+                    id: 'bs3',
+                    question: '13. Dalam arsitektur MVC, berkas View diperbolehkan untuk mengeksekusi Query SQL langsung ke Database MySQL tanpa melalui Controller maupun Model.',
+                    correct: 'Salah',
+                    explanation: 'Berdasarkan prinsip Separation of Concerns (SoC), View dilarang keras melakukan query SQL langsung ke database.'
+                },
+                {
+                    id: 'bs4',
+                    question: '14. Fitur Migration di Laravel berfungsi sebagai kontrol versi (version control) untuk skema struktur tabel database.',
+                    correct: 'Benar',
+                    explanation: 'Migration mencatat setiap perubahan struktur tabel sehingga memudahkan kolaborasi basis data tim.'
+                },
+                {
+                    id: 'bs5',
+                    question: '15. Prinsip "Skinny Controller, Fat Model" berarti Controller harus dibuat seramping mungkin dengan melimpahkan logika manipulasi data mendalam ke Model.',
+                    correct: 'Benar',
+                    explanation: 'Prinsip ini menjaga agar Controller tidak menampung logika query yang rumit dan tetap fokus pada pengaturan alur request-response.'
+                }
+            ],
+            jodoh: [
+                {
+                    id: 'j1',
+                    title: 'Set 1: Peran & Tanggung Jawab Komponen MVC',
+                    colA: [
+                        { id: '1', text: '1. Model' },
+                        { id: '2', text: '2. View' },
+                        { id: '3', text: '3. Controller' },
+                        { id: '4', text: '4. Router (routes/web.php)' },
+                        { id: '5', text: '5. Eloquent ORM' },
+                        { id: '6', text: '6. Blade Engine' }
+                    ],
+                    colB: [
+                        { key: 'A', text: 'Memetakan URL request ke method Controller yang sesuai' },
+                        { key: 'B', text: 'Mengelola data, aturan logika bisnis, dan query database' },
+                        { key: 'C', text: 'Otak pengatur lalu lintas request, pemanggil Model & View' },
+                        { key: 'D', text: 'Menampilkan user interface/HTML akhir kepada pengguna' },
+                        { key: 'E', text: 'Fitur OOP untuk berinteraksi dengan tabel database sebagai objek' },
+                        { key: 'F', text: 'Engine template untuk merender berkas tampilan .blade.php' }
+                    ],
+                    correct: { '1': 'B', '2': 'D', '3': 'C', '4': 'A', '5': 'E', '6': 'F' },
+                    explanation: '1-B (Model=Data/DB), 2-D (View=UI), 3-C (Controller=Pengatur), 4-A (Router=Pemeta URL), 5-E (Eloquent=ORM OOP), 6-F (Blade=Template Engine).'
+                },
+                {
+                    id: 'j2',
+                    title: 'Set 2: Struktur Direktori & Lokasi Berkas Laravel',
+                    colA: [
+                        { id: '1', text: '1. app/Models/' },
+                        { id: '2', text: '2. app/Http/Controllers/' },
+                        { id: '3', text: '3. resources/views/' },
+                        { id: '4', text: '4. routes/web.php' },
+                        { id: '5', text: '5. database/migrations/' },
+                        { id: '6', text: '6. .env' }
+                    ],
+                    colB: [
+                        { key: 'A', text: 'Direktori tempat berkas skema pembentukan tabel database' },
+                        { key: 'B', text: 'Direktori tempat berkas kelas pemrosesan logika & alur data' },
+                        { key: 'C', text: 'Direktori tempat berkas tampilan antarmuka (HTML/Blade)' },
+                        { key: 'D', text: 'Direktori tempat berkas kelas penanganan data & relasi DB' },
+                        { key: 'E', text: 'Berkas pendefinisian rute URL untuk aplikasi web' },
+                        { key: 'F', text: 'Berkas konfigurasi lingkungan aplikasi (database, key, dll)' }
+                    ],
+                    correct: { '1': 'D', '2': 'B', '3': 'C', '4': 'E', '5': 'A', '6': 'F' },
+                    explanation: '1-D (Models), 2-B (Controllers), 3-C (Views), 4-E (Routes), 5-A (Migrations), 6-F (Environment config).'
+                },
+                {
+                    id: 'j3',
+                    title: 'Set 3: Analogi Operasional Restoran pada MVC',
+                    colA: [
+                        { id: '1', text: '1. Pelanggan (Customer)' },
+                        { id: '2', text: '2. Buku Menu / Resepsionis' },
+                        { id: '3', text: '3. Waiter / Pelayan' },
+                        { id: '4', text: '4. Koki & Dapur' },
+                        { id: '5', text: '5. Piring Penyajian & Decor' },
+                        { id: '6', text: '6. Stok Bahan di Lemari Es' }
+                    ],
+                    colB: [
+                        { key: 'A', text: 'User / Web Browser' },
+                        { key: 'B', text: 'Router (routes/web.php)' },
+                        { key: 'C', text: 'Controller' },
+                        { key: 'D', text: 'Model' },
+                        { key: 'E', text: 'View (.blade.php)' },
+                        { key: 'F', text: 'Database Server (MySQL)' }
+                    ],
+                    correct: { '1': 'A', '2': 'B', '3': 'C', '4': 'D', '5': 'E', '6': 'F' },
+                    explanation: '1-A (Customer=Browser), 2-B (Menu=Router), 3-C (Waiter=Controller), 4-D (Koki=Model), 5-E (Piring=View), 6-F (Lemari Es=Database).'
+                },
+                {
+                    id: 'j4',
+                    title: 'Set 4: Sintaksis & Perintah Artisan/Eloquent Laravel',
+                    colA: [
+                        { id: '1', text: '1. php artisan make:model Pengaduan -m' },
+                        { id: '2', text: '2. Route::get(\'/pengaduan\', ...)' },
+                        { id: '3', text: '3. $data = Pengaduan::all();' },
+                        { id: '4', text: '4. return view(\'pengaduan.index\', compact(\'data\'));' },
+                        { id: '5', text: '5. $pengaduan->delete();' },
+                        { id: '6', text: '6. Pengaduan::create([...])' }
+                    ],
+                    colB: [
+                        { key: 'A', text: 'Membuat berkas Model sekaligus berkas Migration baru' },
+                        { key: 'B', text: 'Memetakan URL dengan metode GET ke fungsi Controller' },
+                        { key: 'C', text: 'Mengambil seluruh record data dari tabel via Eloquent' },
+                        { key: 'D', text: 'Menyerahkan data dari Controller ke berkas Blade View' },
+                        { key: 'E', text: 'Menghapus record data terdaftar dari database' },
+                        { key: 'F', text: 'Menyimpan record data baru ke dalam database' }
+                    ],
+                    correct: { '1': 'A', '2': 'B', '3': 'C', '4': 'D', '5': 'E', '6': 'F' },
+                    explanation: '1-A (Make model+migration), 2-B (Route GET), 3-C (Fetch all), 4-D (Pass data to View), 5-E (Delete), 6-F (Insert new record).'
+                },
+                {
+                    id: 'j5',
+                    title: 'Set 5: Konsep & Prinsip Rekayasa Perangkat Lunak',
+                    colA: [
+                        { id: '1', text: '1. Separation of Concerns (SoC)' },
+                        { id: '2', text: '2. Spaghetti Code' },
+                        { id: '3', text: '3. Skinny Controller' },
+                        { id: '4', text: '4. Eager Loading (with)' },
+                        { id: '5', text: '5. Monolithic Unstructured' },
+                        { id: '6', text: '6. Reusability' }
+                    ],
+                    colB: [
+                        { key: 'A', text: 'Prinsip pemisahan program menjadi modul independen (Data, Logika, UI)' },
+                        { key: 'B', text: 'Kode PHP, SQL, dan HTML yang bercampur aduk dalam satu file' },
+                        { key: 'C', text: 'Praktik membuat Controller tetap ringan dengan melimpahkan logika ke Model' },
+                        { key: 'D', text: 'Teknik efisien mengambil data relasi untuk mencegah N+1 query problem' },
+                        { key: 'E', text: 'Arsitektur sistem lama tanpa struktur terorganisir yang menyulitkan tim' },
+                        { key: 'F', text: 'Kemampuan memanfaatkan kembali 1 Model untuk banyak Controller/View' }
+                    ],
+                    correct: { '1': 'A', '2': 'B', '3': 'C', '4': 'D', '5': 'E', '6': 'F' },
+                    explanation: '1-A (SoC), 2-B (Spaghetti Code), 3-C (Skinny Controller), 4-D (Eager Loading), 5-E (Monolithic Unstructured), 6-F (Reusability).'
+                }
+            ]
+        };
+
+        let userAnswers = {};
+        let currentQuizCategory = 'pg';
+
+        // --- SUB-CATEGORY SWITCHING FUNCTION ---
+        function switchQuizCategory(cat) {
+            currentQuizCategory = cat;
+            const categories = ['pg', 'kompleks', 'bs', 'jodoh'];
+            
+            categories.forEach(c => {
+                const btn = document.getElementById(`quiz-tab-${c}`);
+                if (btn) {
+                    if (c === cat) {
+                        btn.className = 'px-4 py-2 text-xs font-bold rounded-xl bg-laravel text-white whitespace-nowrap shadow-md';
+                    } else {
+                        btn.className = 'px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap';
+                    }
+                }
+            });
+
+            renderQuizCategory(cat);
+        }
+
+        function renderQuizCategory(cat) {
+            const container = document.getElementById('quiz-questions-container');
+            container.innerHTML = '';
+
+            if (cat === 'pg') {
+                quizData.pg.forEach(item => {
+                    const qCard = document.createElement('div');
+                    qCard.className = 'bg-slate-800/80 border border-slate-700 p-6 rounded-2xl space-y-4';
+                    qCard.innerHTML = `
+                        <p class="font-bold text-white text-base">${item.question}</p>
+                        <div class="space-y-2">
+                            ${item.options.map(opt => {
+                                const optKey = opt.charAt(0);
+                                const isChecked = userAnswers[item.id] === optKey ? 'checked' : '';
+                                return `
+                                    <label class="flex items-center p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 hover:border-slate-500 cursor-pointer">
+                                        <input type="radio" name="${item.id}" value="${optKey}" ${isChecked} onchange="savePGAnswer('${item.id}', '${optKey}')" class="text-laravel focus:ring-laravel mr-3">
+                                        <span class="text-sm text-slate-300">${opt}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                        <div id="exp-${item.id}" class="hidden p-3 bg-slate-900 rounded-xl border border-slate-700 text-xs text-slate-300 mt-2"></div>
+                    `;
+                    container.appendChild(qCard);
+                });
+            } else if (cat === 'kompleks') {
+                quizData.kompleks.forEach(item => {
+                    const qCard = document.createElement('div');
+                    qCard.className = 'bg-slate-800/80 border border-slate-700 p-6 rounded-2xl space-y-4';
+                    const currentArr = userAnswers[item.id] || [];
+                    qCard.innerHTML = `
+                        <p class="font-bold text-white text-base">${item.question}</p>
+                        <div class="space-y-2">
+                            ${item.options.map(opt => {
+                                const isChecked = currentArr.includes(opt.val) ? 'checked' : '';
+                                return `
+                                    <label class="flex items-center p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 hover:border-slate-500 cursor-pointer">
+                                        <input type="checkbox" value="${opt.val}" ${isChecked} onchange="saveKompleksAnswer('${item.id}', '${opt.val}')" class="text-laravel focus:ring-laravel rounded mr-3">
+                                        <span class="text-sm text-slate-300">${opt.text}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                        <div id="exp-${item.id}" class="hidden p-3 bg-slate-900 rounded-xl border border-slate-700 text-xs text-slate-300 mt-2"></div>
+                    `;
+                    container.appendChild(qCard);
+                });
+            } else if (cat === 'bs') {
+                quizData.bs.forEach(item => {
+                    const qCard = document.createElement('div');
+                    qCard.className = 'bg-slate-800/80 border border-slate-700 p-6 rounded-2xl space-y-4';
+                    const userAns = userAnswers[item.id];
+                    qCard.innerHTML = `
+                        <p class="font-bold text-white text-base">${item.question}</p>
+                        <div class="flex gap-4">
+                            <label class="flex-1 flex items-center justify-center p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 hover:border-emerald-500 cursor-pointer ${userAns === 'Benar' ? 'border-emerald-500 bg-emerald-950/30' : ''}">
+                                <input type="radio" name="${item.id}" value="Benar" ${userAns === 'Benar' ? 'checked' : ''} onchange="saveBSAnswer('${item.id}', 'Benar')" class="text-emerald-500 focus:ring-emerald-500 mr-2">
+                                <span class="text-sm font-bold text-emerald-400"><i class="fa-solid fa-circle-check mr-1"></i> BENAR</span>
+                            </label>
+                            <label class="flex-1 flex items-center justify-center p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 hover:border-rose-500 cursor-pointer ${userAns === 'Salah' ? 'border-rose-500 bg-rose-950/30' : ''}">
+                                <input type="radio" name="${item.id}" value="Salah" ${userAns === 'Salah' ? 'checked' : ''} onchange="saveBSAnswer('${item.id}', 'Salah')" class="text-rose-500 focus:ring-rose-500 mr-2">
+                                <span class="text-sm font-bold text-rose-400"><i class="fa-solid fa-circle-xmark mr-1"></i> SALAH</span>
+                            </label>
+                        </div>
+                        <div id="exp-${item.id}" class="hidden p-3 bg-slate-900 rounded-xl border border-slate-700 text-xs text-slate-300 mt-2"></div>
+                    `;
+                    container.appendChild(qCard);
+                });
+            } else if (cat === 'jodoh') {
+                quizData.jodoh.forEach(set => {
+                    const setCard = document.createElement('div');
+                    setCard.className = 'bg-slate-800/80 border border-slate-700 p-6 rounded-2xl space-y-6';
+                    
+                    const userSetAns = userAnswers[set.id] || {};
+
+                    setCard.innerHTML = `
+                        <div class="border-b border-slate-700 pb-3 flex items-center justify-between">
+                            <h3 class="font-bold text-laravel text-base flex items-center gap-2">
+                                <i class="fa-solid fa-list-check"></i> ${set.title}
+                            </h3>
+                            <span class="text-xs bg-slate-900 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-mono">6 Pasangan</span>
+                        </div>
+
+                        <!-- 2 Column Layout for Matching -->
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                            
+                            <!-- Left: Kolom A Items & Selectors -->
+                            <div class="lg:col-span-7 space-y-4">
+                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Kolom A (Jodohkan Pilihan Ini)</h4>
+                                ${set.colA.map(itemA => {
+                                    const selectedKey = userSetAns[itemA.id] || '';
+                                    return `
+                                        <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-700/80 space-y-2">
+                                            <p class="text-xs font-semibold text-white">${itemA.text}</p>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-slate-400 shrink-0">Pasangan:</span>
+                                                <select onchange="saveJodohAnswer('${set.id}', '${itemA.id}', this.value)" class="w-full bg-slate-800 border border-slate-600 text-slate-200 text-xs rounded-lg p-2 focus:ring-laravel focus:border-laravel">
+                                                    <option value="">-- Pilih Jawaban dari Kolom B --</option>
+                                                    ${set.colB.map(itemB => `
+                                                        <option value="${itemB.key}" ${selectedKey === itemB.key ? 'selected' : ''}>
+                                                            [ ${itemB.key} ] ${itemB.text.substring(0, 45)}...
+                                                        </option>
+                                                    `).join('')}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+
+                            <!-- Right: Kolom B Reference Options List -->
+                            <div class="lg:col-span-5 bg-slate-900/90 border border-slate-700 p-4 rounded-xl h-fit space-y-3">
+                                <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-info"></i> Pilihan Kolom B (Referensi)
+                                </h4>
+                                ${set.colB.map(itemB => `
+                                    <div class="p-2 bg-slate-800/60 rounded-lg text-xs border border-slate-700/50">
+                                        <span class="font-bold text-laravel mr-1">[ ${itemB.key} ]</span>
+                                        <span class="text-slate-300">${itemB.text}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                        </div>
+
+                        <div id="exp-${set.id}" class="hidden p-4 bg-slate-900 rounded-xl border border-slate-700 text-xs text-slate-300 mt-2 space-y-1"></div>
+                    `;
+                    container.appendChild(setCard);
+                });
+            }
+        }
+
+        function savePGAnswer(qId, val) {
+            userAnswers[qId] = val;
+        }
+
+        function saveKompleksAnswer(qId, val) {
+            if (!userAnswers[qId]) userAnswers[qId] = [];
+            const idx = userAnswers[qId].indexOf(val);
+            if (idx > -1) {
+                userAnswers[qId].splice(idx, 1);
+            } else {
+                userAnswers[qId].push(val);
+            }
+        }
+
+        function saveBSAnswer(qId, val) {
+            userAnswers[qId] = val;
+            renderQuizCategory('bs');
+        }
+
+        function saveJodohAnswer(setId, colAId, selectedB) {
+            if (!userAnswers[setId]) userAnswers[setId] = {};
+            userAnswers[setId][colAId] = selectedB;
+        }
+
+        function submitQuiz() {
+            let totalScorePoints = 0;
+            let maxTotalPoints = 20; // 5 PG + 5 Kompleks + 5 BS + 5 Set Menjodohkan = 20 Points Total
+
+            // Check PG (5 questions)
+            quizData.pg.forEach(q => {
+                const expBox = document.getElementById(`exp-${q.id}`);
+                const isCorrect = userAnswers[q.id] === q.correct;
+                if (isCorrect) totalScorePoints += 1;
+                if (expBox) {
+                    expBox.classList.remove('hidden');
+                    expBox.innerHTML = `
+                        <span class="font-bold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'} block">
+                            ${isCorrect ? '✓ Jawaban Benar!' : '✗ Jawaban Salah! Jawaban Benar: ' + q.correct}
+                        </span>
+                        <p class="mt-1">${q.explanation}</p>
+                    `;
+                }
+            });
+
+            // Check Kompleks (5 questions)
+            quizData.kompleks.forEach(q => {
+                const expBox = document.getElementById(`exp-${q.id}`);
+                const userArr = (userAnswers[q.id] || []).slice().sort();
+                const targetArr = q.correct.slice().sort();
+                const isCorrect = JSON.stringify(userArr) === JSON.stringify(targetArr);
+                if (isCorrect) totalScorePoints += 1;
+                if (expBox) {
+                    expBox.classList.remove('hidden');
+                    expBox.innerHTML = `
+                        <span class="font-bold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'} block">
+                            ${isCorrect ? '✓ Jawaban Benar!' : '✗ Jawaban Kurang Tepat! Jawaban Benar: ' + q.correct.join(', ')}
+                        </span>
+                        <p class="mt-1">${q.explanation}</p>
+                    `;
+                }
+            });
+
+            // Check BS (5 questions)
+            quizData.bs.forEach(q => {
+                const expBox = document.getElementById(`exp-${q.id}`);
+                const isCorrect = userAnswers[q.id] === q.correct;
+                if (isCorrect) totalScorePoints += 1;
+                if (expBox) {
+                    expBox.classList.remove('hidden');
+                    expBox.innerHTML = `
+                        <span class="font-bold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'} block">
+                            ${isCorrect ? '✓ Jawaban Benar!' : '✗ Jawaban Salah! Kunci: ' + q.correct}
+                        </span>
+                        <p class="mt-1">${q.explanation}</p>
+                    `;
+                }
+            });
+
+            // Check Jodoh (5 Sets of 6 Items)
+            quizData.jodoh.forEach(set => {
+                const expBox = document.getElementById(`exp-${set.id}`);
+                const userAns = userAnswers[set.id] || {};
+                let setCorrectMatches = 0;
+
+                Object.keys(set.correct).forEach(colAId => {
+                    if (userAns[colAId] === set.correct[colAId]) {
+                        setCorrectMatches++;
+                    }
+                });
+
+                // Add fractional point (e.g., 6/6 = 1 point)
+                const setScore = setCorrectMatches / 6;
+                totalScorePoints += setScore;
+
+                if (expBox) {
+                    expBox.classList.remove('hidden');
+                    const isPerfect = setCorrectMatches === 6;
+                    expBox.innerHTML = `
+                        <span class="font-bold ${isPerfect ? 'text-emerald-400' : 'text-amber-400'} block">
+                            ${isPerfect ? '✓ Sempurna! Semua 6 pasangan benar.' : `ℹ Benar ${setCorrectMatches} dari 6 Pasangan.`}
+                        </span>
+                        <p class="mt-1 font-mono text-[11px] text-slate-300">Kunci Jawaban: ${set.explanation}</p>
+                    `;
+                }
+            });
+
+            const finalScore = Math.round((totalScorePoints / maxTotalPoints) * 100);
+            document.getElementById('score-display').innerText = `${finalScore} / 100`;
+
+            // Display Custom Result Modal
+            document.getElementById('modal-score-val').innerText = `${finalScore} / 100`;
+            document.getElementById('modal-points-detail').innerText = `Poin Terkumpul: ${totalScorePoints.toFixed(1)} dari ${maxTotalPoints} Poin Maksimal`;
+            
+            let feedback = '';
+            if (finalScore >= 85) {
+                feedback = 'Luar biasa! Anda memiliki pemahaman yang sangat mendalam mengenai arsitektur MVC dan alur kerja framework Laravel.';
+            } else if (finalScore >= 70) {
+                feedback = 'Bagus! Pemahaman Anda sudah baik. Periksa kembali beberapa soal yang masih keliru untuk menyempurnakan wawasan.';
+            } else {
+                feedback = 'Tetap semangat! Pelajari kembali materi pada Tab 1 dan simulasi pada Tab 3 untuk memperkuat dasar pemahaman Anda.';
+            }
+            document.getElementById('modal-feedback-msg').innerText = feedback;
+            document.getElementById('result-modal').classList.remove('hidden');
+        }
+
+        function closeResultModal() {
+            document.getElementById('result-modal').classList.add('hidden');
+        }
+
+        function resetQuiz() {
+            userAnswers = {};
+            document.getElementById('score-display').innerText = `0 / 100`;
+            switchQuizCategory(currentQuizCategory);
+        }
+
+        // --- 5. INITIALIZATION ON LOAD ---
+        window.onload = function() {
+            setFlowStep(1);
+            showAnalogiDetail('user');
+            switchQuizCategory('pg');
+        };
+    </script>
+</body>
+</html>
