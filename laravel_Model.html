@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="id" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul Pembelajaran: Model pada Laravel</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        laravel: '#FF2D20',
+                        laravelDark: '#E02316',
+                        darkBg: '#0f172a',
+                        cardBg: '#1e293b',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Highlight.js for Code Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/php.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body x-data="appData()" class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur border-b border-slate-800 px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden text-slate-400 hover:text-white p-1">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <div class="bg-laravel text-white p-1.5 rounded-lg font-bold">
+                    <i data-lucide="database" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight flex items-center gap-2">
+                        <span>Laravel Model Masterclass</span>
+                        <span class="text-xs bg-laravel/20 text-laravel border border-laravel/30 px-2 py-0.5 rounded-full font-mono">v10.x</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Panduan Lengkap & Interaktif Pemahaman Model & Eloquent ORM</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Progress Bar -->
+        <div class="flex items-center gap-4">
+            <div class="relative hidden md:block w-64">
+                <input type="text" x-model="searchQuery" placeholder="Cari topik / materi..." 
+                    class="w-full bg-slate-800 border border-slate-700 text-xs text-slate-200 rounded-lg pl-9 pr-3 py-2 focus:outline-none focus:border-laravel">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+            </div>
+
+            <!-- Progress Meter -->
+            <div class="hidden sm:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
+                <div class="text-xs text-slate-400">Progres:</div>
+                <div class="w-20 bg-slate-700 h-2 rounded-full overflow-hidden">
+                    <div class="bg-laravel h-full transition-all duration-300" :style="`width: ${progressPercent}%`"></div>
+                </div>
+                <span class="text-xs font-mono text-laravel font-bold" x-text="`${progressPercent}%`"></span>
+            </div>
+
+            <button @click="openQuizModal = true" class="bg-laravel hover:bg-laravelDark text-white text-xs px-3 py-2 rounded-lg font-semibold flex items-center gap-1.5 transition">
+                <i data-lucide="award" class="w-4 h-4"></i>
+                <span>Uji Pemahaman</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="fixed inset-y-0 left-0 z-40 w-72 bg-slate-900 border-r border-slate-800 transform transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 pt-16 lg:pt-0 flex flex-col"
+            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+            
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center lg:hidden">
+                <span class="font-bold text-sm text-slate-300">Daftar Isi Materi</span>
+                <button @click="sidebarOpen = false" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-4 overflow-y-auto flex-1 custom-scrollbar">
+                <nav class="space-y-1">
+                    <template x-for="(item, index) in filteredNavItems" :key="index">
+                        <a :href="'#' + item.id" 
+                           @click="activeSection = item.id; markAsRead(item.id); if(window.innerWidth < 1024) sidebarOpen = false;"
+                           class="group flex items-center justify-between px-3 py-2.5 text-xs font-medium rounded-lg transition"
+                           :class="activeSection === item.id ? 'bg-laravel/10 text-laravel border-l-2 border-laravel font-semibold' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'">
+                            <span class="truncate" x-text="`${index + 1}. ${item.title}`"></span>
+                            <span x-show="readSections.includes(item.id)" class="text-emerald-400">
+                                <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                            </span>
+                        </a>
+                    </template>
+                </nav>
+
+                <div class="mt-8 p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
+                    <div class="text-xs font-bold text-slate-300 mb-1 flex items-center gap-1.5">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-laravel"></i> Simulator Eloquent
+                    </div>
+                    <p class="text-[11px] text-slate-400 mb-2">Coba simulasi method & query Eloquent secara langsung.</p>
+                    <button @click="scrollToSection('simulator')" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs py-1.5 rounded font-medium transition">
+                        Buka Simulator
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-4 lg:p-8 custom-scrollbar space-y-12 max-w-5xl mx-auto">
+
+            <!-- Banner / Intro -->
+            <div class="bg-gradient-to-r from-slate-800 via-slate-800/90 to-laravel/10 p-6 rounded-2xl border border-slate-700/80 shadow-lg relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-laravel">
+                    <i data-lucide="layers" class="w-64 h-64"></i>
+                </div>
+                <div class="relative z-10 space-y-2">
+                    <span class="bg-laravel/20 text-laravel border border-laravel/30 text-[10px] font-mono uppercase px-2.5 py-1 rounded-full font-bold tracking-wider">Modul Interaktif</span>
+                    <h2 class="text-2xl lg:text-3xl font-extrabold text-white">Model & Eloquent ORM di Laravel</h2>
+                    <p class="text-slate-300 text-sm max-w-2xl leading-relaxed">
+                        Pelajari bagaimana Model berperan sebagai jembatan antara aplikasi Laravel dan basis data, memahami mass assignment dengan <code>$fillable</code>, menguasai relasi tabel (<code>belongsTo</code> & <code>hasMany</code>), serta mengoptimalkan query menggunakan <code>Scope</code>.
+                    </p>
+                </div>
+            </div>
+
+            <!-- SECTION 1: Apa itu Model -->
+            <section id="apa-itu-model" class="space-y-4 pt-4 border-t border-slate-800">
+                <div class="flex items-center gap-2 text-laravel">
+                    <i data-lucide="box" class="w-5 h-5"></i>
+                    <h2 class="text-xl font-bold text-slate-100">1. Apa itu Model?</h2>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Dalam konsep <strong>MVC (Model–View–Controller)</strong>, Model adalah bagian yang bertugas khusus berhubungan dengan data dan database.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-800/70 p-4 rounded-xl border border-slate-700">
+                        <div class="text-xs font-semibold text-laravel uppercase tracking-wider mb-2">Konsep Sederhana</div>
+                        <p class="text-sm font-medium text-slate-200">
+                            <strong>Model</strong> = Penghubung utama antara aplikasi Laravel dengan data di dalam database.
+                        </p>
+                        <p class="text-xs text-slate-400 mt-2">
+                            Model memungkinkan kita melakukan operasi terhadap database menggunakan <strong>Eloquent ORM</strong> tanpa harus selalu menulis query SQL secara eksplisit.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-800/70 p-4 rounded-xl border border-slate-700">
+                        <div class="text-xs font-semibold text-sky-400 uppercase tracking-wider mb-2">Pemetaan Tabel ke Model</div>
+                        <div class="space-y-1.5 text-xs">
+                            <div class="flex justify-between items-center p-1.5 bg-slate-900/60 rounded border border-slate-700/50">
+                                <span class="font-mono text-amber-400">tabel: users</span>
+                                <span class="text-slate-400">➔</span>
+                                <span class="font-mono text-emerald-400">User.php</span>
+                            </div>
+                            <div class="flex justify-between items-center p-1.5 bg-slate-900/60 rounded border border-slate-700/50">
+                                <span class="font-mono text-amber-400">tabel: aspirasis</span>
+                                <span class="text-slate-400">➔</span>
+                                <span class="font-mono text-emerald-400">Aspirasi.php</span>
+                            </div>
+                            <div class="flex justify-between items-center p-1.5 bg-slate-900/60 rounded border border-slate-700/50">
+                                <span class="font-mono text-amber-400">tabel: kategoris</span>
+                                <span class="text-slate-400">➔</span>
+                                <span class="font-mono text-emerald-400">Kategori.php</span>
+                            </div>
+                            <div class="flex justify-between items-center p-1.5 bg-slate-900/60 rounded border border-slate-700/50">
+                                <span class="font-mono text-amber-400">tabel: tanggapans</span>
+                                <span class="text-slate-400">➔</span>
+                                <span class="font-mono text-emerald-400">Tanggapan.php</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Struktur Dasar Model -->
+            <section id="struktur-dasar" class="space-y-4 pt-6 border-t border-slate-800">
+                <div class="flex items-center gap-2 text-laravel">
+                    <i data-lucide="code-2" class="w-5 h-5"></i>
+                    <h2 class="text-xl font-bold text-slate-100">2. Struktur Dasar Model Laravel</h2>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Model pada Laravel merupakan sebuah class PHP biasa yang melakukan <em>extend</em> terhadap class <code>Illuminate\Database\Eloquent\Model</code>.
+                </p>
+
+                <div class="relative group">
+                    <button @click="copyCode($refs.codeStruktur.innerText)" class="absolute right-3 top-3 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs px-2.5 py-1 rounded border border-slate-600 transition flex items-center gap-1 z-10">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy
+                    </button>
+                    <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-sm overflow-x-auto"><code x-ref="codeStruktur" class="language-php">&lt;?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Kategori extends Model
+{
+    //
+}</code></pre>
+                </div>
+
+                <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/70 space-y-3">
+                    <h3 class="text-sm font-semibold text-slate-200">Penjelasan Bagian Penting:</h3>
+                    <ul class="space-y-2 text-xs text-slate-300">
+                        <li class="flex items-start gap-2">
+                            <span class="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded font-mono font-bold">namespace</span>
+                            <span><code>namespace App\Models;</code> — Menandakan lokasi berkas fisik model berada di dalam folder <code>app/Models</code>.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded font-mono font-bold">use Model</span>
+                            <span><code>use Illuminate\Database\Eloquent\Model;</code> — Mengimpor base class Eloquent Model dari framework Laravel.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono font-bold">class</span>
+                            <span><code>class Kategori extends Model</code> — Mendeklarasikan class Kategori yang mewarisi seluruh kemampuan Eloquent ORM.</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Model dan Tabel Database -->
+            <section id="model-dan-tabel" class="space-y-4 pt-6 border-t border-slate-800">
+                <div class="flex items-center gap-2 text-laravel">
+                    <i data-lucide="table" class="w-5 h-5"></i>
+                    <h2 class="text-xl font-bold text-slate-100">3. Konvensi Model dan Tabel Database</h2>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Secara bawaan (*convention over configuration*), Laravel secara otomatis memetakan nama class Model berbentuk <strong>Singular (Tunggal) / PascalCase</strong> ke nama tabel di database yang berbentuk <strong>Plural (Jamak) / snake_case Bahasa Inggris</strong>.
+                </p>
+
+                <!-- Interactive Diagram Visualization -->
+                <div class="bg-slate-800/80 p-5 rounded-xl border border-slate-700 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="text-center md:text-left space-y-2">
+                        <span class="text-xs text-laravel font-mono font-bold">Model Class</span>
+                        <div class="bg-slate-900 border border-emerald-500/40 p-3 rounded-lg text-emerald-400 font-mono text-sm font-bold shadow-lg">
+                            class Kategori extends Model
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center text-slate-400">
+                        <span class="text-[10px] uppercase font-bold text-slate-500 mb-1">Otomatis Terhubung</span>
+                        <i data-lucide="arrow-right" class="w-6 h-6 text-laravel hidden md:block"></i>
+                        <i data-lucide="arrow-down" class="w-6 h-6 text-laravel block md:hidden"></i>
+                    </div>
+
+                    <div class="text-center md:text-left space-y-2">
+                        <span class="text-xs text-sky-400 font-mono font-bold">Database Table</span>
+                        <div class="bg-slate-900 border border-sky-500/40 p-3 rounded-lg text-sky-300 font-mono text-xs shadow-lg space-y-1">
+                            <div class="font-bold border-b border-slate-700 pb-1">kategoris</div>
+                            <div class="text-slate-400 font-normal">id | nama_kategori | keterangan | created_at | updated_at</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-xs text-slate-400">
+                    Dengan terhubungnya Model dan Tabel, kita dapat langsung memanggil method Eloquent seperti berikut:
+                </p>
+
+                <div class="relative group">
+                    <pre class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs font-mono text-emerald-400"><code>// Mengambil seluruh data dari tabel kategoris
+$kategori = Kategori::all();</code></pre>
+                </div>
+            </section>
+
+            <!-- SECTION 4: $fillable -->
+            <section id="fillable" class="space-y-4 pt-6 border-t border-slate-800">
+                <div class="flex items-center gap-2 text-laravel">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                    <h2 class="text-xl font-bold text-slate-100">4. Mass Assignment & <code>$fillable</code></h2>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Properti <code>$fillable</code> digunakan untuk menentukan kolom mana saja pada tabel database yang diizinkan untuk diisi menggunakan fitur <strong>Mass Assignment</strong>.
+                </p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold text-slate-400">Deklarasi di Model Kategori:</span>
+                        <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono"><code class="language-php">&lt;?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Kategori extends Model
+{
+    protected $fillable = [
+        'nama_kategori',
+        'keterangan',
+    ];
+}</code></pre>
+                    </div>
+
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold text-slate-400">Penggunaan dalam Controller / Logic:</span>
+                        <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono"><code class="language-php">// Mengisi data sekaligus (Mass Assignment)
+Kategori::create([
+    'nama_kategori' => 'Fasilitas',
+    'keterangan'    => 'Aspirasi fasilitas sekolah',
+]);</code></pre>
+                        <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-xs text-amber-200">
+                            <strong>Mengapa $fillable Penting?</strong><br>
+                            Untuk keamanan aplikasi (mencegah <em>Mass Assignment Vulnerability</em>). Tanpa pembatasan ini, pengguna nakal bisa saja mengirimkan request HTTP yang merubah kolom sensitif seperti <code>is_admin</code> atau <code>role</code>.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: Contoh Model Aspirasi -->
+            <section id="contoh-model-aspirasi" class="space-y-4 pt-6 border-t border-slate-800">
+                <div class="flex items-center gap-2 text-laravel">
+                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                    <h2 class="text-xl font-bold text-slate-100">5. Studi Kasus: Model Aspirasi</h2>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Mari kita tinjau penerapannya pada kasus nyata aplikasi pengaduan/aspirasi siswa. Berikut properti <code>$fillable</code> pada Model <code>Aspirasi</code>:
+                </p>
+
+                <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono"><code class="language-php">&lt;?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Aspirasi extends Model
+{
+    protected $fillable = [
+        'user_id',
+        'kategori_id',
+        'deskripsi',
+        'lokasi',
+        'foto_bukti',
+        'status',
+    ];
+}</code></pre>
+
+                <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700">
+                    <div class="text-xs font-bold text-slate-300 mb-2">Contoh Pembuatan Data Aspirasi Baru:</div>
+                    <pre class="bg-slate-950 p-3 rounded-lg text-xs text-sky-300 font-mono"><code>Aspirasi::create([
+    'user_id'     => 10,
+    'kategori_id' => 2,
+    'deskripsi'   => 'Kipas angin di kelas rusak',
+    'lokasi'      => 'Ruang X PPLG',
+    'status'      => 'Menunggu',
+]);</code></pre>
+                </div>
+            </section>
+
+            <!-- SECTION 6 & 7 & 8: Relasi Antar Model & belongsTo -->
+            <section id="relasi-belongsto" class="space-y-4 pt-6 border-t border-slate-800">
+                <div class="flex items-center gap-2 text-laravel">
+                    <i data-lucide="git-fork" class="w-5 h-5"></i>
+                    <h2 class="text-xl font-bold text-slate-100">6, 7 & 8. Relasi Antar-Model & Method <code>belongsTo</code></h2>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Salah satu keunggulan utama Eloquent adalah kemudahannya menghubungkan tabel (Relationships). Method <code>belongsTo()</code> digunakan pada model tabel anak yang menyimpan <strong>Foreign Key</strong>.
+                </p>
+
+                <!-- BelongsTo Visual Diagram -->
+                <div class="bg-slate-800/80 p-5 rounded-xl border border-slate-700 space-y-3">
+                    <div class="text-xs font-bold text-laravel uppercase tracking-wider">Visualisasi Relasi belongsTo</div>
+                    <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
+                        <div class="bg-slate-900 p-3 rounded border border-slate-700 text-center">
+                            <span class="text-amber-400 font-bold">tabel: users</span><br>
+                            <span class="text-slate-400">id</span>
+                        </div>
+                        <div class="text-slate-400 flex flex-col items-center">
+                            <span>▲</span>
+                            <span class="text-[10px] text-slate-500">Foreign Key (user_id)</span>
+                            <span>│</span>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded border border-emerald-500/50 text-center">
+                            <span class="text-emerald-400 font-bold">tabel: aspirasis</span><br>
+                            <span class="text-sky-300">id | user_id | kategori_id | deskripsi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold text-slate-300">1. Relasi Aspirasi ke User (Pelapor)</span>
+                        <pre class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs font-mono"><code class="language-php">public function pelapor()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}</code></pre>
+                        <p class="text-xs text-slate-400">Cara Penggunaan:</p>
+                        <pre class="bg-slate-900 p-2.5 rounded text-xs font-mono text-emerald-400"><code>$aspirasi = Aspirasi::find(1);
+echo $aspirasi->pelapor->name;</code></pre>
+                    </div>
+
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold text-slate-300">2. Relasi Aspirasi ke Kategori</span>
+                        <pre class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs font-mono"><code class="language-php">public function kategori()
+{
+    return $this->belongsTo(Kategori::class, 'kategori_id');
+}</code></pre>
+                        <p class="text-xs text-slate-400">Cara Penggunaan:</p>
+                        <pre class="bg-slate-900 p-2.5 rounded text-xs font-mono text-emerald-400"><code>$aspirasi = Aspirasi::find(1);
+echo $aspirasi->kategori->nama_kategori;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 9 & 10: hasMany & Perbandingan -->
+            <section id="relasi-hasmany" class="space-y-4 pt-6 border-t border-slate-800">
+                <div class="flex items-center gap-2 text-laravel">
+                    <i data-lucide="network" class="w-5 h-5"></i>
+                    <h2 class="text-xl font-bold text-slate-100">9 & 10. Relasi <code>hasMany</code> & Perbedaannya</h2>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Method <code>hasMany()</code> digunakan pada model induk (*parent*) untuk menandakan bahwa 1 data induk memiliki banyak (*many*) data anak.
+                </p>
+
+                <!-- Code Example -->
+                <div class="space-y-2">
+                    <span class="text-xs font-bold text-slate-300">Pada Model Kategori:</span>
+                    <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono"><code class="language-php">public function aspirasi()
+{
+    return $this->hasMany(Aspirasi::class, 'kategori_id');
+}</code></pre>
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border-collapse bg-slate-800/60 rounded-xl overflow-hidden border border-slate-700">
+                        <thead class="bg-slate-900 text-slate-300 uppercase font-mono">
+                            <tr>
+                                <th class="p-3 border-b border-slate-700">Method Method</th>
+                                <th class="p-3 border-b border-slate-700">Arti / Arah</th>
+                                <th class="p-3 border-b border-slate-700">Posisi Foreign Key</th>
+                                <th class="p-3 border-b border-slate-700">Contoh Konstruksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-700 text-slate-300">
+                            <tr class="hover:bg-slate-800/90">
+                                <td class="p-3 font-mono font-bold text-laravel">belongsTo()</td>
+                                <td class="p-3">Dimiliki oleh (1 Parent)</td>
+                                <td class="p-3 text-emerald-400">Di tabel milik sendiri</td>
+                                <td class="p-3 font-mono">Aspirasi ➔ User / Kategori</td>
+                            </tr>
+                            <tr class="hover:bg-slate-800/90">
+                                <td class="p-3 font-mono font-bold text-sky-400">hasMany()</td>
+                                <td class="p-3">Memiliki banyak (N Child)</td>
+                                <td class="p-3 text-amber-400">Di tabel milik anak / lawan</td>
+                                <td class="p-3 font-mono">Kategori ➔ Banyak Aspirasi</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-xs text-emerald-300">
+                    💡 <strong>Tips Mudah Mengingat:</strong><br>
+                    • <em>Aspirasi</em> <strong>belongsTo</strong> <em>Kategori</em> (karena 1 aspirasi punya 1 kategori).<br>
+                    • <em>Kategori</em> <strong>hasMany</strong> <em>Aspirasi</em> (karena 1 kategori bisa berisi banyak aspirasi).
+                </div>
+            </section>
+
+            <!-- SECTION 11 & 12: Scope pada Model -->
+            <section id="scope-model" class="space-y-4 pt-6 border-t border-slate-800">
+                <div class="flex items-center gap-2 text-laravel">
+                    <i data-lucide="filter" class="w-5 h-5"></i>
+                    <h2 class="text-xl font-bold text-slate-100">11 & 12. Local Scope pada Model</h2>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    <strong>Local Scope</strong> memungkinkan kita untuk mendefinisikan kumpulan kondisi query yang sering digunakan berulang kali, sehingga sintaks penulisan di Controller menjadi lebih rapi dan ekspresif.
+                </p>
+
+                <div class="space-y-4">
+                    <!-- Scope Status -->
+                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold text-sky-400 font-mono">Contoh 1: scopeStatus()</h3>
+                            <span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-0.5 rounded">Sederhana</span>
+                        </div>
+                        <pre class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs font-mono"><code class="language-php">// Di dalam Model Aspirasi.php
+public function scopeStatus($query, $status)
+{
+    return $query->where('status', $status);
+}</code></pre>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs pt-1">
+                            <div class="bg-slate-900 p-2 rounded border border-slate-800">
+                                <span class="text-rose-400 block font-mono text-[11px]">❌ Tanpa Scope:</span>
+                                <code>Aspirasi::where('status', 'Menunggu')->get();</code>
+                            </div>
+                            <div class="bg-slate-900 p-2 rounded border border-emerald-500/30">
+                                <span class="text-emerald-400 block font-mono text-[11px]">✅ Menggunakan Scope:</span>
+                                <code>Aspirasi::status('Menunggu')->get();</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scope MilikPerwalian -->
+                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold text-purple-400 font-mono">Contoh 2: scopeMilikPerwalian()</h3>
+                            <span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-0.5 rounded">Kompleks (Relationship Query)</span>
+                        </div>
+                        <pre class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs font-mono"><code class="language-php">// Di dalam Model Aspirasi.php
+public function scopeMilikPerwalian($query, $waliId)
+{
+    return $query->whereHas('pelapor', function ($q) use ($waliId) {
+        $q->where('wali_id', $waliId);
+    });
+}</code></pre>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            <strong>Tujuan Scope Ini:</strong> Membatasi agar pengguna bertipe Wali Kelas hanya dapat melihat daftar aspirasi yang dikirimkan oleh siswa-siswa yang berada di bawah perwaliannya.
+                        </p>
+                        <pre class="bg-slate-900 p-2.5 rounded text-xs font-mono text-emerald-400"><code>// Di Controller Wali Kelas:
+$aspirasiSiswa = Aspirasi::milikPerwalian($waliId)->get();</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- INTERACTIVE ELOQUENT SIMULATOR -->
+            <section id="simulator" class="space-y-4 pt-8 border-t-2 border-laravel/40">
+                <div class="bg-slate-800/90 p-6 rounded-2xl border border-laravel/30 shadow-2xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="p-2 bg-laravel/20 text-laravel rounded-lg">
+                                <i data-lucide="terminal" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-white">Interactive Eloquent Simulator</h3>
+                                <p class="text-xs text-slate-400">Pilih query Eloquent dan lihat hasil eksekusi simulated JSON & SQL yang dihasilkan.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <template x-for="(sim, index) in simQueries" :key="index">
+                            <button @click="activeSim = index" 
+                                :class="activeSim === index ? 'bg-laravel text-white border-laravel' : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-slate-500'"
+                                class="text-left p-3 rounded-xl border text-xs font-mono transition flex flex-col justify-between">
+                                <span class="font-bold" x-text="sim.title"></span>
+                                <span class="text-[11px] opacity-80 mt-1" x-text="sim.code"></span>
+                            </button>
+                        </template>
+                    </div>
+
+                    <!-- Terminal Output Window -->
+                    <div class="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden font-mono">
+                        <div class="bg-slate-900 px-4 py-2 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+                                <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+                                <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+                                <span class="ml-2 text-slate-300 font-sans font-medium text-[11px]">Eloquent Execution Result</span>
+                            </div>
+                            <span class="text-[10px] text-laravel uppercase font-bold" x-text="simQueries[activeSim].type"></span>
+                        </div>
+                        <div class="p-4 space-y-3 text-xs">
+                            <div>
+                                <div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">SQL Query yang Dijalankan:</div>
+                                <div class="text-amber-300 mt-0.5" x-text="simQueries[activeSim].sql"></div>
+                            </div>
+                            <div>
+                                <div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Output Result (JSON):</div>
+                                <pre class="text-emerald-400 mt-1 overflow-x-auto max-h-48 custom-scrollbar" x-text="JSON.stringify(simQueries[activeSim].output, null, 2)"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- QUIZ MODAL -->
+    <div x-show="openQuizModal" 
+         x-transition
+         class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div @click.away="openQuizModal = false" class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2 text-laravel">
+                    <i data-lucide="award" class="w-5 h-5"></i>
+                    <h3 class="font-bold text-slate-100">Uji Pemahaman: Model Laravel</h3>
+                </div>
+                <button @click="openQuizModal = false" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div x-show="!quizFinished" class="space-y-4">
+                <div class="flex justify-between text-xs text-slate-400">
+                    <span>Soal <span x-text="currentQuestion + 1"></span> dari <span x-text="quizQuestions.length"></span></span>
+                    <span x-text="`Skor: ${quizScore}`"></span>
+                </div>
+
+                <div class="text-sm font-semibold text-slate-200" x-text="quizQuestions[currentQuestion].question"></div>
+
+                <div class="space-y-2">
+                    <template x-for="(opt, idx) in quizQuestions[currentQuestion].options" :key="idx">
+                        <button @click="selectAnswer(idx)" 
+                            class="w-full text-left p-3 rounded-lg border text-xs transition"
+                            :class="selectedAnswer === idx 
+                                ? (idx === quizQuestions[currentQuestion].correct ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300' : 'bg-rose-500/20 border-rose-500 text-rose-300')
+                                : 'bg-slate-800 border-slate-700 hover:border-slate-600 text-slate-300'">
+                            <span x-text="opt"></span>
+                        </button>
+                    </template>
+                </div>
+
+                <div x-show="showExplanation" class="p-3 rounded-lg bg-slate-800/80 text-xs text-slate-300 border border-slate-700">
+                    <span class="font-bold text-laravel block mb-1">Penjelasan:</span>
+                    <span x-text="quizQuestions[currentQuestion].explanation"></span>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button x-show="showExplanation" @click="nextQuestion()" class="bg-laravel hover:bg-laravelDark text-white text-xs px-4 py-2 rounded-lg font-semibold">
+                        <span x-text="currentQuestion + 1 === quizQuestions.length ? 'Lihat Hasil' : 'Lanjut'"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Result View -->
+            <div x-show="quizFinished" class="text-center py-6 space-y-4">
+                <div class="w-16 h-16 bg-laravel/20 text-laravel rounded-full flex items-center justify-center mx-auto">
+                    <i data-lucide="trophy" class="w-8 h-8"></i>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold text-white">Kuis Selesai!</h4>
+                    <p class="text-xs text-slate-400 mt-1">Skor Akhir Anda:</p>
+                    <div class="text-3xl font-extrabold text-laravel mt-2" x-text="`${quizScore} / ${quizQuestions.length * 20}`"></div>
+                </div>
+                <button @click="resetQuiz()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-4 py-2 rounded-lg font-semibold border border-slate-700">
+                    Coba Lagi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div x-show="toast.show" x-transition class="fixed bottom-5 right-5 bg-slate-800 text-emerald-400 border border-emerald-500/40 text-xs px-4 py-2.5 rounded-lg shadow-xl flex items-center gap-2 z-50">
+        <i data-lucide="check-circle" class="w-4 h-4"></i>
+        <span x-text="toast.message"></span>
+    </div>
+
+    <!-- Alpine JS Logic -->
+    <script>
+        function appData() {
+            return {
+                sidebarOpen: false,
+                activeSection: 'apa-itu-model',
+                searchQuery: '',
+                readSections: ['apa-itu-model'],
+                openQuizModal: false,
+                activeSim: 0,
+                toast: { show: false, message: '' },
+
+                navItems: [
+                    { id: 'apa-itu-model', title: 'Apa itu Model?' },
+                    { id: 'struktur-dasar', title: 'Struktur Dasar Model' },
+                    { id: 'model-dan-tabel', title: 'Model & Tabel Database' },
+                    { id: 'fillable', title: 'Mass Assignment ($fillable)' },
+                    { id: 'contoh-model-aspirasi', title: 'Studi Kasus Model Aspirasi' },
+                    { id: 'relasi-belongsto', title: 'Relasi belongsTo' },
+                    { id: 'relasi-hasmany', title: 'Relasi hasMany & Perbandingan' },
+                    { id: 'scope-model', title: 'Local Scope pada Model' },
+                    { id: 'simulator', title: 'Simulator Eloquent' }
+                ],
+
+                get filteredNavItems() {
+                    if (!this.searchQuery) return this.navItems;
+                    return this.navItems.filter(item => 
+                        item.title.toLowerCase().includes(this.searchQuery.toLowerCase())
+                    );
+                },
+
+                get progressPercent() {
+                    return Math.round((this.readSections.length / this.navItems.length) * 100);
+                },
+
+                markAsRead(id) {
+                    if (!this.readSections.includes(id)) {
+                        this.readSections.push(id);
+                    }
+                },
+
+                scrollToSection(id) {
+                    this.activeSection = id;
+                    this.markAsRead(id);
+                    const el = document.getElementById(id);
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                },
+
+                copyCode(text) {
+                    navigator.clipboard.writeText(text);
+                    this.toast.message = 'Kode berhasil disalin!';
+                    this.toast.show = true;
+                    setTimeout(() => this.toast.show = false, 2500);
+                },
+
+                // Simulated Queries
+                simQueries: [
+                    {
+                        title: 'Ambil Semua Data Kategori',
+                        code: 'Kategori::all()',
+                        type: 'SELECT ALL',
+                        sql: 'SELECT * FROM `kategoris`;',
+                        output: [
+                            { id: 1, nama_kategori: 'Sarana Prasarana', keterangan: 'Aspirasi terkait fasilitas fisik' },
+                            { id: 2, nama_kategori: 'Akademik', keterangan: 'Aspirasi terkait kurikulum & KBM' }
+                        ]
+                    },
+                    {
+                        title: 'Filter Status Aspirasi (Scope)',
+                        code: 'Aspirasi::status("Menunggu")->get()',
+                        type: 'SCOPE QUERY',
+                        sql: 'SELECT * FROM `aspirasis` WHERE `status` = "Menunggu";',
+                        output: [
+                            { id: 101, user_id: 10, kategori_id: 2, deskripsi: 'Kipas angin kelas rusak', lokasi: 'Ruang X PPLG', status: 'Menunggu' }
+                        ]
+                    },
+                    {
+                        title: 'Relasi Aspirasi ke Pelapor',
+                        code: '$aspirasi->pelapor',
+                        type: 'RELATION (belongsTo)',
+                        sql: 'SELECT * FROM `users` WHERE `id` = 10 LIMIT 1;',
+                        output: { id: 10, name: 'Ahmad Siswa', email: 'ahmad@siswa.belajar.id', role: 'siswa' }
+                    },
+                    {
+                        title: 'Relasi Kategori ke Aspirasi',
+                        code: '$kategori->aspirasi',
+                        type: 'RELATION (hasMany)',
+                        sql: 'SELECT * FROM `aspirasis` WHERE `kategori_id` = 1;',
+                        output: [
+                            { id: 101, deskripsi: 'Kipas angin kelas rusak', status: 'Menunggu' },
+                            { id: 105, deskripsi: 'Proyektor lab mati', status: 'Selesai' }
+                        ]
+                    }
+                ],
+
+                // Quiz Logic
+                currentQuestion: 0,
+                selectedAnswer: null,
+                showExplanation: false,
+                quizScore: 0,
+                quizFinished: false,
+
+                quizQuestions: [
+                    {
+                        question: 'Apa fungsi utama dari Model pada arsitektur MVC Laravel?',
+                        options: [
+                            'Mengatur tampilan antarmuka pengguna (UI)',
+                            'Menghubungkan aplikasi Laravel dengan database/data',
+                            'Mengelola routing URL aplikasi',
+                            'Menjalankan kompresi file CSS/JS'
+                        ],
+                        correct: 1,
+                        explanation: 'Model bertugas mengelola data dan menjembatani komunikasi aplikasi dengan basis data via Eloquent ORM.'
+                    },
+                    {
+                        question: 'Tabel database bernama "kategoris" secara konvensi Laravel dihubungkan dengan Model bernama...',
+                        options: ['Kategoris.php', 'KategoriModel.php', 'Kategori.php', 'TabelKategori.php'],
+                        correct: 2,
+                        explanation: 'Laravel menggunakan konvensi nama Model Singular (Kategori) untuk tabel Plural (kategoris).'
+                    },
+                    {
+                        question: 'Properti $fillable pada Model digunakan untuk...',
+                        options: [
+                            'Menentukan kolom mana yang boleh diisi via Mass Assignment',
+                            'Menghapus kolom database secara otomatis',
+                            'Mengunci tabel agar tidak bisa diubah',
+                            'Menyimpan query SQL mentah'
+                        ],
+                        correct: 0,
+                        explanation: 'properti $fillable menjaga keamanan aplikasi dari Mass Assignment Vulnerability.'
+                    },
+                    {
+                        question: 'Jika 1 Aspirasi dimiliki oleh 1 User, relasi pada Model Aspirasi didefinisikan dengan...',
+                        options: ['hasMany(User::class)', 'belongsTo(User::class)', 'belongsToMany(User::class)', 'hasOneThrough(User::class)'],
+                        correct: 1,
+                        explanation: 'belongsTo() digunakan pada model yang menyimpan Foreign Key (user_id).'
+                    },
+                    {
+                        question: 'Penulisan nama method untuk Local Scope di Model Laravel yang benar adalah...',
+                        options: ['public function getStatus()', 'public function filterStatus()', 'public function scopeStatus()', 'public function queryStatus()'],
+                        correct: 2,
+                        explanation: 'Local Scope wajib diawali dengan awalan kata "scope", contoh: scopeStatus($query, $val).'
+                    }
+                ],
+
+                selectAnswer(idx) {
+                    if (this.showExplanation) return;
+                    this.selectedAnswer = idx;
+                    this.showExplanation = true;
+                    if (idx === this.quizQuestions[this.currentQuestion].correct) {
+                        this.quizScore += 20;
+                    }
+                },
+
+                nextQuestion() {
+                    this.selectedAnswer = null;
+                    this.showExplanation = false;
+                    if (this.currentQuestion + 1 < this.quizQuestions.length) {
+                        this.currentQuestion++;
+                    } else {
+                        this.quizFinished = true;
+                    }
+                },
+
+                resetQuiz() {
+                    this.currentQuestion = 0;
+                    this.selectedAnswer = null;
+                    this.showExplanation = false;
+                    this.quizScore = 0;
+                    this.quizFinished = false;
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            hljs.highlightAll();
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
