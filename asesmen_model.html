@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Model & Migration - C4 Level Assessment Game</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        laravel: '#FF2D20',
+                        'laravel-dark': '#CC231A',
+                        darkbg: '#0F172A',
+                        cardbg: '#1E293B',
+                        terminalbg: '#090D16',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(255, 45, 32, 0.25);
+        }
+
+        .glow-green {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="h-full text-slate-200 font-sans antialiased selection:bg-laravel selection:text-white flex flex-col justify-between custom-scrollbar">
+
+    <!-- TOP HEADER / HUD -->
+    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur border-b border-slate-800 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-laravel/10 border border-laravel/30 rounded-xl text-laravel glow-effect">
+                    <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-100 text-base md:text-lg flex items-center gap-2">
+                        <span>Laravel Code Investigator</span>
+                        <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-laravel/20 text-laravel border border-laravel/40">C4 ANALYZER</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Model, Migration, Relasi & Security Forensic</p>
+                </div>
+            </div>
+
+            <!-- HUD Stats -->
+            <div id="hud-panel" class="flex items-center gap-4 text-xs font-mono">
+                <!-- Bug Health Meter -->
+                <div class="bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                    <i data-lucide="heart" class="w-4 h-4 text-rose-500 fill-rose-500/20"></i>
+                    <span class="text-slate-400 hidden md:inline">SYSTEM HEALTH:</span>
+                    <div class="w-20 bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="health-bar" class="bg-emerald-500 h-full w-full transition-all duration-300"></div>
+                    </div>
+                    <span id="health-text" class="text-emerald-400 font-bold">100%</span>
+                </div>
+
+                <!-- Score Meter -->
+                <div class="bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4 text-amber-400 fill-amber-400/20"></i>
+                    <span class="text-slate-400 hidden md:inline">XP:</span>
+                    <span id="score-text" class="text-amber-400 font-bold text-sm">0</span>
+                </div>
+
+                <!-- Streak -->
+                <div class="bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2 hidden sm:flex">
+                    <i data-lucide="flame" class="w-4 h-4 text-orange-500"></i>
+                    <span id="streak-text" class="text-orange-400 font-bold">0x Streak</span>
+                </div>
+
+                <!-- Schema Drawer Trigger -->
+                <button onclick="toggleSchemaModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 transition hover:text-white">
+                    <i data-lucide="database" class="w-4 h-4 text-sky-400"></i>
+                    <span class="hidden md:inline font-sans">Schema Inspector</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+
+        <!-- SCREEN 1: WELCOME SCREEN -->
+        <div id="welcome-screen" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-10 shadow-2xl space-y-6 max-w-3xl mx-auto">
+            <div class="space-y-3 text-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-laravel/10 border border-laravel/30 text-laravel text-xs font-semibold">
+                    <i data-lucide="cpu" class="w-4 h-4"></i> Asesmen Tingkat Tinggi (C4 - Analisis)
+                </div>
+                <h2 class="text-2xl md:text-3xl font-extrabold text-white">Selamat Datang, Laravel Architect!</h2>
+                <p class="text-slate-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+                    Uji kemampuan analisis kode (C4) Anda! Anda bertugas menginvestigasi bug migration, celah keamanan <i>mass assignment</i>, kesalahan pemetaan relasi Eloquent, serta optimasi query pada aplikasi Aspirasi Sekolah.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                    <i data-lucide="file-code" class="w-6 h-6 text-sky-400"></i>
+                    <h3 class="font-bold text-slate-200 text-sm">10 Kasus Skenario</h3>
+                    <p class="text-xs text-slate-400">Analisis snippet kode PHP, error terminal, dan skema database nyata.</p>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                    <i data-lucide="database" class="w-6 h-6 text-emerald-400"></i>
+                    <h3 class="font-bold text-slate-200 text-sm">Live Schema Tools</h3>
+                    <p class="text-xs text-slate-400">Inspeksi skema 4 tabel utama (Users, Kategoris, Aspirasis, Tanggapans) kapan saja.</p>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                    <i data-lucide="activity" class="w-6 h-6 text-purple-400"></i>
+                    <h3 class="font-bold text-slate-200 text-sm">Laporan Kompetensi</h3>
+                    <p class="text-xs text-slate-400">Dapatkan diagnostic radar & rekomendasi perbaikan setelah selesai.</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="info" class="w-4 h-4 text-amber-400 flex-shrink-0"></i>
+                    <span>Setiap jawaban salah mengurangi System Health sebesar 20%. Jaga health tidak mencapai 0%!</span>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-center">
+                <button onclick="startGame()" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-laravel to-laravel-dark hover:from-laravel-dark hover:to-laravel text-white font-bold rounded-xl shadow-lg shadow-laravel/20 transition transform active:scale-95 flex items-center justify-center gap-3">
+                    <i data-lucide="play" class="w-5 h-5 fill-white"></i>
+                    <span>Mulai Investigasi Kode</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: GAMEPLAY SCREEN -->
+        <div id="game-screen" class="hidden space-y-6">
+            <!-- Progress Tracker Bar -->
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <span id="case-badge" class="px-3 py-1 bg-slate-800 border border-slate-700 text-slate-300 font-mono text-xs rounded-lg font-semibold">KASUS #1</span>
+                    <span id="case-category" class="text-xs font-semibold text-laravel uppercase tracking-wider">Migration Forensics</span>
+                </div>
+                
+                <!-- Progress Indicator -->
+                <div class="w-full sm:w-64 bg-slate-950 rounded-full h-2.5 overflow-hidden border border-slate-800">
+                    <div id="game-progress" class="bg-laravel h-full w-10 transition-all duration-300"></div>
+                </div>
+                <span id="case-count-text" class="text-xs font-mono text-slate-400">Soal 1 dari 10</span>
+            </div>
+
+            <!-- Question & IDE Code Workspace Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Column: Scenario & IDE Code Viewer (7 cols) -->
+                <div class="lg:col-span-7 space-y-4">
+                    <!-- Scenario Card -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+                        <div class="flex items-center gap-2 text-slate-300 font-semibold text-sm">
+                            <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i>
+                            <span>Skenario Masalah (Kasus Investigasi)</span>
+                        </div>
+                        <p id="scenario-text" class="text-slate-200 text-sm leading-relaxed font-sans">
+                            <!-- Scenario inserted dynamically -->
+                        </p>
+                    </div>
+
+                    <!-- Code / IDE Box -->
+                    <div class="bg-terminalbg border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+                        <!-- IDE Header -->
+                        <div class="bg-slate-900 px-4 py-2 border-b border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-rose-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+                                <span id="ide-filename" class="ml-2 font-mono text-xs text-slate-400">database/migrations/create_aspirasis_table.php</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-slate-500 uppercase">PHP / Laravel Snippet</span>
+                        </div>
+                        <!-- IDE Code Text -->
+                        <div class="p-4 font-mono text-xs overflow-x-auto custom-scrollbar text-slate-300 leading-relaxed max-h-80">
+                            <pre><code id="ide-code"><!-- Code dynamically inserted --></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Analysis Prompt & Options (5 cols) -->
+                <div class="lg:col-span-5 space-y-4 flex flex-col justify-between">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4 flex-1">
+                        <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                            <i data-lucide="help-circle" class="w-4 h-4"></i>
+                            <span>Pertanyaan Analisis (C4)</span>
+                        </div>
+                        <h3 id="question-text" class="text-sm font-semibold text-white leading-snug">
+                            <!-- Question dynamic -->
+                        </h3>
+
+                        <!-- Options List -->
+                        <div id="options-container" class="space-y-2.5 pt-2">
+                            <!-- Options generated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Next Question / Submit Action Button -->
+                    <button id="submit-btn" onclick="checkAnswer()" disabled class="w-full py-3 bg-slate-800 text-slate-400 cursor-not-allowed font-bold rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
+                        <span>Konfirmasi Diagnosa</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: END ASSESSMENT / DIAGNOSTIC REPORT -->
+        <div id="result-screen" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-10 shadow-2xl space-y-8 max-w-4xl mx-auto">
+            <div class="text-center space-y-3">
+                <div id="result-badge" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                    <i data-lucide="check-circle-2" class="w-4 h-4"></i> Evaluasi Diagnostik Selesai
+                </div>
+                <h2 class="text-3xl font-extrabold text-white">Laporan Audit Laravel Architect</h2>
+                <p class="text-slate-400 text-sm max-w-lg mx-auto">Berikut adalah analisis kompetensi Anda berdasarkan jawaban kasus C4 yang telah diselesaikan.</p>
+            </div>
+
+            <!-- Score Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center space-y-1">
+                    <span class="text-xs text-slate-400 font-mono">TOTAL SCORE (XP)</span>
+                    <p id="final-score" class="text-3xl font-extrabold text-amber-400">0</p>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center space-y-1">
+                    <span class="text-xs text-slate-400 font-mono">AKURASI DIAGNOSA</span>
+                    <p id="final-accuracy" class="text-3xl font-extrabold text-emerald-400">0%</p>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center space-y-1">
+                    <span class="text-xs text-slate-400 font-mono">SYSTEM HEALTH SISA</span>
+                    <p id="final-health" class="text-3xl font-extrabold text-sky-400">100%</p>
+                </div>
+            </div>
+
+            <!-- Detailed Competency Breakdown -->
+            <div class="space-y-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i data-lucide="bar-chart-2" class="w-5 h-5 text-laravel"></i>
+                    <span>Peta Kompetensi C4 Anda</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="competency-container">
+                    <!-- Dynamic competency bars -->
+                </div>
+            </div>
+
+            <!-- Expert Feedback Box -->
+            <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl space-y-2">
+                <h4 class="font-bold text-slate-200 text-sm flex items-center gap-2">
+                    <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+                    <span>Rekomendasi Instruktur</span>
+                </h4>
+                <p id="expert-recom" class="text-xs text-slate-400 leading-relaxed">
+                    <!-- Recommendation dynamic -->
+                </p>
+            </div>
+
+            <!-- Restart Button -->
+            <div class="flex justify-center gap-4 pt-2">
+                <button onclick="restartGame()" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-700 transition flex items-center gap-2 text-sm">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    <span>Ulangi Asesmen</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FEEDBACK OVERLAY MODAL -->
+    <div id="feedback-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-5 animate-in fade-in zoom-in duration-200">
+            <div class="flex items-center gap-3">
+                <div id="feedback-icon-bg" class="p-3 rounded-xl">
+                    <i id="feedback-icon" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 id="feedback-title" class="font-bold text-lg text-white"></h3>
+                    <p id="feedback-subtitle" class="text-xs text-slate-400 font-mono"></p>
+                </div>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 text-xs">
+                <span class="font-bold text-slate-300 font-mono uppercase tracking-wider block">Penjelasan Analisis Kasus:</span>
+                <p id="feedback-explanation" class="text-slate-300 leading-relaxed font-sans"></p>
+            </div>
+
+            <button onclick="nextQuestion()" class="w-full py-3 bg-laravel hover:bg-laravel-dark text-white font-bold rounded-xl transition flex items-center justify-center gap-2 text-sm">
+                <span>Lanjutkan ke Kasus Berikutnya</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- SCHEMA INSPECTOR DRAWER / MODAL -->
+    <div id="schema-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-sky-400 font-bold">
+                    <i data-lucide="database" class="w-5 h-5"></i>
+                    <h3 class="text-base text-white">Skema Database Migration Inspector</h3>
+                </div>
+                <button onclick="toggleSchemaModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content - Schema Tabs & Viewer -->
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-6 flex-1 text-xs font-mono">
+                <!-- Tab Buttons -->
+                <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
+                    <button onclick="switchSchemaTab('users')" id="tab-users" class="schema-tab-btn px-3 py-1.5 rounded-lg bg-laravel text-white font-bold">users</button>
+                    <button onclick="switchSchemaTab('kategoris')" id="tab-kategoris" class="schema-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400">kategoris</button>
+                    <button onclick="switchSchemaTab('aspirasis')" id="tab-aspirasis" class="schema-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400">aspirasis</button>
+                    <button onclick="switchSchemaTab('tanggapans')" id="tab-tanggapans" class="schema-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400">tanggapans</button>
+                </div>
+
+                <!-- Table Content Containers -->
+                <div id="schema-content-users" class="schema-content space-y-3">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span>Migration: <code class="text-amber-400">0001_01_01_000000_create_users_table.php</code></span>
+                        <span>Model: <code class="text-emerald-400">User.php</code></span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <table class="w-full text-left border-collapse text-slate-300">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-slate-500 uppercase text-[10px]">
+                                    <th class="py-2">Kolom</th>
+                                    <th class="py-2">Tipe Data</th>
+                                    <th class="py-2">Atribut / Constraint</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/50">
+                                <tr><td class="py-2 text-sky-400">id</td><td>bigIncrements</td><td>PK, Auto Increment</td></tr>
+                                <tr><td class="py-2 text-sky-400">name</td><td>string</td><td>Required</td></tr>
+                                <tr><td class="py-2 text-sky-400">nomor_induk</td><td>string</td><td>UNIQUE</td></tr>
+                                <tr><td class="py-2 text-sky-400">password</td><td>string</td><td>Required</td></tr>
+                                <tr><td class="py-2 text-sky-400">kelas</td><td>string</td><td>NULLABLE</td></tr>
+                                <tr><td class="py-2 text-sky-400">role</td><td>enum</td><td>['siswa', 'wali_kelas', 'waka_sarpras'], default('siswa')</td></tr>
+                                <tr><td class="py-2 text-sky-400">wali_id</td><td>foreignId</td><td>NULLABLE, FK -> users(id), onDelete('set null')</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="schema-content-kategoris" class="schema-content hidden space-y-3">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span>Migration: <code class="text-amber-400">2026_04_06_145052_create_kategoris_table.php</code></span>
+                        <span>Model: <code class="text-emerald-400">Kategori.php</code></span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <table class="w-full text-left border-collapse text-slate-300">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-slate-500 uppercase text-[10px]">
+                                    <th class="py-2">Kolom</th>
+                                    <th class="py-2">Tipe Data</th>
+                                    <th class="py-2">Atribut / Constraint</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/50">
+                                <tr><td class="py-2 text-sky-400">id</td><td>bigIncrements</td><td>PK</td></tr>
+                                <tr><td class="py-2 text-sky-400">nama_kategori</td><td>string</td><td>UNIQUE</td></tr>
+                                <tr><td class="py-2 text-sky-400">keterangan</td><td>text</td><td>NULLABLE</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="schema-content-aspirasis" class="schema-content hidden space-y-3">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span>Migration: <code class="text-amber-400">2026_04_06_145122_create_aspirasis_table.php</code></span>
+                        <span>Model: <code class="text-emerald-400">Aspirasi.php</code></span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <table class="w-full text-left border-collapse text-slate-300">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-slate-500 uppercase text-[10px]">
+                                    <th class="py-2">Kolom</th>
+                                    <th class="py-2">Tipe Data</th>
+                                    <th class="py-2">Atribut / Constraint</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/50">
+                                <tr><td class="py-2 text-sky-400">id</td><td>bigIncrements</td><td>PK</td></tr>
+                                <tr><td class="py-2 text-sky-400">user_id</td><td>foreignId</td><td>FK -> users(id), onDelete('cascade')</td></tr>
+                                <tr><td class="py-2 text-sky-400">kategori_id</td><td>foreignId</td><td>FK -> kategoris(id), onDelete('cascade')</td></tr>
+                                <tr><td class="py-2 text-sky-400">deskripsi</td><td>text</td><td>Required</td></tr>
+                                <tr><td class="py-2 text-sky-400">lokasi</td><td>string</td><td>Required</td></tr>
+                                <tr><td class="py-2 text-sky-400">foto_bukti</td><td>string</td><td>NULLABLE</td></tr>
+                                <tr><td class="py-2 text-sky-400">status</td><td>enum</td><td>['pending', 'verified', 'proses', 'selesai', 'ditolak'], default('pending')</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="schema-content-tanggapans" class="schema-content hidden space-y-3">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span>Migration: <code class="text-amber-400">2026_04_06_145200_create_tanggapans_table.php</code></span>
+                        <span>Model: <code class="text-emerald-400">Tanggapan.php</code></span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <table class="w-full text-left border-collapse text-slate-300">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-slate-500 uppercase text-[10px]">
+                                    <th class="py-2">Kolom</th>
+                                    <th class="py-2">Tipe Data</th>
+                                    <th class="py-2">Atribut / Constraint</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/50">
+                                <tr><td class="py-2 text-sky-400">id</td><td>bigIncrements</td><td>PK</td></tr>
+                                <tr><td class="py-2 text-sky-400">aspirasi_id</td><td>foreignId</td><td>FK -> aspirasis(id), onDelete('cascade')</td></tr>
+                                <tr><td class="py-2 text-sky-400">petugas_id</td><td>foreignId</td><td>FK -> users(id), onDelete('cascade')</td></tr>
+                                <tr><td class="py-2 text-sky-400">isi_tanggapan</td><td>text</td><td>Required</td></tr>
+                                <tr><td class="py-2 text-sky-400">foto_perbaikan</td><td>string</td><td>NULLABLE</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 border-t border-slate-800/80 px-4 py-3 text-center text-xs text-slate-500 font-mono">
+        Laravel C4 High-Order Thinking Skill (HOTS) Assessment Platform &bull; Aspirasi & Tanggapans Module
+    </footer>
+
+    <script>
+        // WEB AUDIO SYNTHESIZER FOR SOUND EFFECTS
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'select') {
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.35);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(120, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            }
+        }
+
+        // GAME QUESTIONS DATA (C4 BLOOM LEVEL)
+        const questions = [
+            {
+                id: 1,
+                category: "Migration Forensics",
+                competencyKey: "schemaDesign",
+                scenario: "Seorang developer baru saja menjalankan <code class='text-amber-400'>php artisan migrate:fresh</code> pada database kosong. Namun, terminal menampilkan error berikut saat memproses file migrasi `aspirasis`:",
+                ideFilename: "terminal / bash output",
+                codeSnippet: `SQLSTATE[HY000]: General error: 1215 Cannot add foreign key constraint 
+(SQL: alter table \`aspirasis\` add constraint \`aspirasis_user_id_foreign\` 
+foreign key (\`user_id\`) references \`users\` (\`id\`) on delete cascade)`,
+                question: "Analisislah penyebab utama kegagalan perintah migration di atas berdasarkan urutan timestamp file migrasi!",
+                options: [
+                    "Kolom user_id di tabel aspirasis seharusnya menggunakan tipe integer() biasa, bukan foreignId().",
+                    "File migrasi tabel `users` memiliki timestamp waktu yang lebih baru daripada file migrasi `aspirasis`, sehingga tabel `users` belum terbentuk saat `aspirasis` membutuhkan FK user_id.",
+                    "Atribut onDelete('cascade') tidak didukung oleh database MySQL engine InnoDB.",
+                    "Tabel aspirasis memerlukan primary key komposit sebelum menambahkan foreign key constraint."
+                ],
+                correct: 1,
+                explanation: "Foreign key constraint membutuhkan tabel acuan (`users`) harus sudah dibuat TERLEBIH DAHULU di database. Laravel mengeksekusi file migrasi secara urut berdasarkan timestamp pada nama file. Jika file `aspirasis` ber-timestamp lebih awal dibanding `users`, maka pembuatan FK akan gagal."
+            },
+            {
+                id: 2,
+                category: "Security & Mass Assignment",
+                competencyKey: "security",
+                scenario: "Pada aplikasi pengaduan, seorang siswa mengirimkan HTTP Request POST untuk memperbarui deskripsi aspirasinya. Namun, secara mencurigakan, status aspirasi tersebut langsung berubah menjadi <code class='text-emerald-400'>'verified'</code> tanpa persetujuan Wali Kelas!",
+                ideFilename: "app/Models/Aspirasi.php",
+                codeSnippet: `class Aspirasi extends Model
+{
+    // Property fillable di Model Aspirasi
+    protected $fillable = [
+        'user_id',
+        'kategori_id',
+        'deskripsi',
+        'lokasi',
+        'foto_bukti',
+        'status', // <--- Terdaftar di fillable
+    ];
+}
+
+// Controller
+$aspirasi->update($request->all());`,
+                question: "Analisislah celah keamanan (vulnerability) yang terjadi pada Model Aspirasi di atas!",
+                options: [
+                    "Terjadi Mass Assignment Vulnerability karena kolom 'status' dimasukkan ke dalam $fillable, sehingga pengguna dapat memanipulasi parameter status dari payload HTTP request.",
+                    "Model Aspirasi tidak mengimplementasikan interface Authenticatable sehingga tidak bisa memvalidasi role.",
+                    "Penggunaan $request->all() mewajibkan seluruh kolom di tabel memiliki default value di database.",
+                    "Atribut $fillable seharusnya diganti menjadi $visible agar kolom status terlindungi dari overwrite."
+                ],
+                correct: 0,
+                explanation: "Properti `$fillable` menentukan kolom mana yang boleh diisi secara massal (`mass assignment`). Memasukkan kolom kontrol seperti `status` ke `$fillable` berbahaya karena attacker bisa menyisipkan `status=verified` pada payload request HTTP. Kolom status harus diperbarui secara eksplisit oleh controller otorisasi."
+            },
+            {
+                id: 3,
+                category: "Eloquent Relationship Logic",
+                competencyKey: "eloquentLogic",
+                scenario: "Developer ingin menampilkan nama siswa pelapor aspirasi dengan kode <code class='text-amber-400'>$aspirasi->pelapor->name</code>. Namun aplikasi error: <code class='text-rose-400'>Attempt to read property 'name' on null</code>. Setelah dicek di database, record aspirasi tersebut memiliki nilai `user_id = 5` dan User ID 5 ada di tabel `users`!",
+                ideFilename: "app/Models/Aspirasi.php",
+                codeSnippet: `class Aspirasi extends Model
+{
+    // Definisi relasi di Model Aspirasi
+    public function pelapor()
+    {
+        return $this->belongsTo(User::class, 'pelapor_id'); 
+    }
+}`,
+                question: "Analisislah mengapa relasi Eloquent tersebut mengembalikan nilai `null`!",
+                options: [
+                    "Method belongsTo() wajib menggunakan nama fungsi yang sama persis dengan nama Model target, yaitu user().",
+                    "Parameter kedua pada belongsTo() diset 'pelapor_id', padahal nama kolom foreign key yang sebenarnya berada di tabel aspirasis adalah 'user_id'.",
+                    "Relasi dari Aspirasi ke User seharusnya menggunakan hasOne(), bukan belongsTo().",
+                    "Class User::class harus di-import menggunakan alias namespace 'App\\User'."
+                ],
+                correct: 1,
+                explanation: "Pada method `$this->belongsTo(User::class, 'foreign_key')`, parameter kedua menentukan kolom foreign key di tabel lokal (`aspirasis`). Karena diisi `'pelapor_id'`, Eloquent mencari kolom `pelapor_id` yang bernilai NULL/tidak ada di tabel `aspirasis`, padahal nilainya ada di kolom `user_id`."
+            },
+            {
+                id: 4,
+                category: "Local Scope & Subquery Tracing",
+                competencyKey: "eloquentLogic",
+                scenario: "Wali Kelas ingin memfilter aspirasi agar hanya menampilkan aspirasi yang dikirim oleh siswa perwaliannya. Kode scope berikut dipanggil: <code class='text-amber-400'>Aspirasi::milikPerwalian(3)->get();</code>",
+                ideFilename: "app/Models/Aspirasi.php",
+                codeSnippet: `class Aspirasi extends Model
+{
+    public function scopeMilikPerwalian($query, $waliId)
+    {
+        return $query->whereHas('pelapor', function ($q) use ($waliId) {
+            $q->where('wali_id', $waliId);
+        });
+    }
+}`,
+                question: "Analisislah logika query SQL yang dihasilkan oleh method Eloquent `whereHas('pelapor', ...)` di atas!",
+                options: [
+                    "Menjalankan query SQL WHERE EXISTS untuk mengecek keberadaan record pada tabel users di mana users.id = aspirasis.user_id DAN users.wali_id = $waliId.",
+                    "Melakukan INNER JOIN langsung antara tabel aspirasis dan tabel tanggapans berdasarkan wali_id.",
+                    "Mengambil seluruh data users dari database ke memori PHP lalu memfilter array menggunakan array_filter().",
+                    "Secara otomatis menambahkan kondisi WHERE status = 'verified' pada tabel aspirasis."
+                ],
+                correct: 0,
+                explanation: "Method `whereHas()` pada Eloquent menerjemahkan relasi ke dalam klausa subquery SQL `WHERE EXISTS (SELECT * FROM users WHERE users.id = aspirasis.user_id AND users.wali_id = ?)` untuk memfilter parent model berdasarkan kriteria child/relation."
+            },
+            {
+                id: 5,
+                category: "Cascading Deletion Forensic",
+                competencyKey: "schemaDesign",
+                scenario: "Seorang Waka Sarpras menghapus salah satu record Kategori 'Fasilitas Kelas' (id = 2) dari tabel `kategoris`.",
+                ideFilename: "database/migrations/2026_04_06_145122_create_aspirasis_table.php",
+                codeSnippet: `// Migration Aspirasis:
+$table->foreignId('kategori_id')->constrained('kategoris')->onDelete('cascade');
+
+// Migration Tanggapans:
+$table->foreignId('aspirasi_id')->constrained('aspirasis')->onDelete('cascade');`,
+                question: "Analisislah efek berantai (cascading effect) yang terjadi pada database saat Kategori ID 2 tersebut dihapus!",
+                options: [
+                    "Terjadi SQL Foreign Key Constraint Error karena tabel tanggapans masih menyimpan data aspirasi terkait.",
+                    "Seluruh record Aspirasi dengan kategori_id = 2 terhapus, DAN seluruh record Tanggapan yang terhubung dengan aspirasi-aspirasi tersebut ikut terhapus secara otomatis.",
+                    "Hanya data pada tabel kategoris yang terhapus, sedangkan kategori_id pada tabel aspirasis berubah menjadi NULL.",
+                    "Penghapusan ditolak oleh database hingga admin menghapus data tanggapans secara manual satu per satu."
+                ],
+                correct: 1,
+                explanation: "Karena atribut `onDelete('cascade')` terpasang pada FK `kategori_id` (di `aspirasis`) dan FK `aspirasi_id` (di `tanggapans`), maka penghapusan parent (kategori) akan memicu cascading deletion menghapus semua child `aspirasis`, yang selanjutnya secara otomatis memicu penghapusan grandchild `tanggapans`."
+            },
+            {
+                id: 6,
+                category: "CLI & Seeder Workflow",
+                competencyKey: "cliWorkflow",
+                scenario: "Anda baru saja mengubah data awal pada file `KategoriSeeder.php`. Anda ingin memperbarui isi tabel `kategoris` di database TANPA menghapus data user lain atau menjalankan ulang seluruh seeder aplikasi.",
+                ideFilename: "Terminal / Artisan CLI",
+                codeSnippet: `php artisan ... [perintah yang tepat]`,
+                question: "Manakah perintah Artisan CLI yang tepat dan efisien untuk mengeksekusi hanya file `KategoriSeeder` tersebut?",
+                options: [
+                    "php artisan migrate:refresh --seed",
+                    "php artisan db:seed --class=KategoriSeeder",
+                    "php artisan make:seeder KategoriSeeder --force",
+                    "php artisan migrate:rollback --step=1"
+                ],
+                correct: 1,
+                explanation: "Option `--class=NamaSeederClass` pada perintah `php artisan db:seed` memungkinkan kita untuk mengeksekusi secara spesifik satu class Seeder tanpa harus menjalankan `DatabaseSeeder` utama atau mereset seluruh database."
+            },
+            {
+                id: 7,
+                category: "HasMany vs Dynamic Property Tracing",
+                competencyKey: "eloquentLogic",
+                scenario: "Di Model Kategori terdapat relasi <code class='text-emerald-400'>public function aspirasi() { return $this->hasMany(Aspirasi::class, 'kategori_id'); }</code>. Developer memanggil kode berikut untuk menghitung jumlah aspirasi:",
+                ideFilename: "app/Http/Controllers/KategoriController.php",
+                codeSnippet: `$kategori = Kategori::find(1);
+
+// Opsi A: $kategori->aspirasi()->count();
+// Opsi B: $kategori->aspirasi->count();`,
+                question: "Analisislah perbedaan mendasar proses eksekusi antara Opsi A dan Opsi B!",
+                options: [
+                    "Opsi A mengeksekusi query SQL `SELECT COUNT(*)` di database, sedangkan Opsi B mengambil SELURUH record aspirasi ke memori PHP sebagai Collection lalu menghitung panjang array-nya.",
+                    "Opsi A mengembalikan nilai boolean, sedangkan Opsi B mengembalikan integer.",
+                    "Opsi B lebih cepat dari Opsi A karena memanfaatkan query caching otomatis Laravel.",
+                    "Opsi A akan menyebabkan error 'Call to undefined method' karena relasi tidak boleh dipanggil sebagai function."
+                ],
+                correct: 0,
+                explanation: "Memanggil relasi sebagai method `$kategori->aspirasi()` mengembalikan Relationship Builder sehingga query SQL `SELECT COUNT(*)` langsung dijalankan di database (efisien). Memanggil sebagai properti dinamis `$kategori->aspirasi` akan me-load seluruh Eloquent Collection ke memori PHP terlebih dahulu."
+            },
+            {
+                id: 8,
+                category: "Migration Schema Alteration",
+                competencyKey: "schemaDesign",
+                scenario: "Aplikasi sudah berjalan di server produksi dengan ribuan data. Tim ingin menambahkan peran baru <code class='text-amber-400'>'kepala_sekolah'</code> pada enum `role` di tabel `users`.",
+                ideFilename: "database/migrations/0001_01_01_000000_create_users_table.php",
+                codeSnippet: `// Kolom awal di create_users_table:
+$table->enum('role', ['siswa', 'wali_kelas', 'waka_sarpras'])->default('siswa');`,
+                question: "Analisislah langkah perubahan skema migrasi yang BENAR agar data produksi tidak hilang!",
+                options: [
+                    "Mengedit langsung file `0001_01_01_000000_create_users_table.php` lalu menjalankan `php artisan migrate`.",
+                    "Membuat file migrasi baru (misal `update_role_in_users_table`) menggunakan `Schema::table()` untuk meng-alter kolom enum, lalu jalankan `php artisan migrate`.",
+                    "Menjalankan `php artisan migrate:fresh` di server produksi.",
+                    "Menghapus tabel `users` dari PhpMyAdmin lalu menjalankan `php artisan db:seed`."
+                ],
+                correct: 1,
+                explanation: "Di lingkungan produksi, file migrasi yang sudah pernah dieksekusi TIDAK BOLEH diedit langsung karena `php artisan migrate` tidak akan mendeteksi perubahan file lama. Harus dibuat file migrasi baru dengan `Schema::table()` untuk memodifikasi struktur tanpa merusak data yang ada."
+            },
+            {
+                id: 9,
+                category: "Multi-Table Relational Navigation",
+                competencyKey: "eloquentLogic",
+                scenario: "Seorang siswa ingin melihat daftar seluruh tanggapan dari Waka Sarpras atas aspirasi-aspirasi yang pernah dikirimkannya.",
+                ideFilename: "app/Models/User.php",
+                codeSnippet: `class User extends Model
+{
+    public function aspirasis()
+    {
+        return $this->hasMany(Aspirasi::class, 'user_id');
+    }
+}
+
+// Di Controller:
+$siswa = User::find(10);
+// Developer mencoba: $tanggapans = $siswa->aspirasis->tanggapans;`,
+                question: "Analisislah mengapa variabel `$siswa->aspirasis->tanggapans` menghasilkan error <code class='text-rose-400'>Property [tanggapans] does not exist on this collection instance</code>!",
+                options: [
+                    "Properti $siswa->aspirasis mengembalikan 'Eloquent Collection' (banyak object aspirasi), bukan satu object Aspirasi, sehingga tidak bisa langsung memanggil properti relasi ->tanggapans.",
+                    "Satu user hanya boleh memiliki satu aspirasi (hasOne).",
+                    "Model Tanggapan belum di-import di bagian atas file controller.",
+                    "Relasi dari Aspirasi ke Tanggapan seharusnya menggunakan belongsTo."
+                ],
+                correct: 0,
+                explanation: "`$siswa->aspirasis` menghasilkan sebuah Collection (kumpulan data). Kita tidak bisa mengakses properti relasi child (`->tanggapans`) langsung dari sebuah Collection instance. Perlu menggunakan relasi `hasManyThrough` atau melakukan query melalui Model `Tanggapan::whereHas(...)`."
+            },
+            {
+                id: 10,
+                category: "Database Default State Logic",
+                competencyKey: "schemaDesign",
+                scenario: "Di migration `aspirasis`, kolom status didefinisikan: <code class='text-amber-400'>$table->enum('status', ['pending', 'verified', 'proses', 'selesai', 'ditolak'])->default('pending');</code>. Kemudian developer membuat aspirasi baru dengan kode:",
+                ideFilename: "app/Http/Controllers/AspirasiController.php",
+                codeSnippet: `Aspirasi::create([
+    'user_id'     => 12,
+    'kategori_id' => 1,
+    'deskripsi'   => 'Lampu kelas padam',
+    'lokasi'      => 'Ruang X PPLG 2',
+    // Kolom 'status' sengaja tidak dimasukkan dalam array
+]);`,
+                question: "Analisislah nilai apakah yang akan tersimpan pada kolom `status` di database setelah baris kode di atas dieksekusi?",
+                options: [
+                    "Nilai NULL karena kolom status tidak dikirimkan dalam method create().",
+                    "Nilai 'pending' karena constraint default('pending') di migration skema database secara otomatis mengisi kolom saat di-omit.",
+                    "Sistem melempar exception: SQLSTATE[HY000]: General error: 1364 Field 'status' doesn't have a default value.",
+                    "Nilai 'verified' karena otomatis terverifikasi oleh sistem."
+                ],
+                correct: 1,
+                explanation: "Ketika suatu kolom ditetapakan dengan `->default('pending')` pada migrasi database, jika perintah SQL INSERT tidak mencantumkan kolom tersebut, maka database engine secara otomatis menetapkan nilai default `'pending'`."
+            }
+        ];
+
+        // GAME STATE STATE VARIABLES
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let health = 100;
+        let streak = 0;
+        let selectedOptionIndex = null;
+        let userAnswers = [];
+
+        // Competency Tracking Object (C4 Analysis Areas)
+        let competencyScores = {
+            schemaDesign: { correct: 0, total: 0, title: "Schema & Migration Design" },
+            security: { correct: 0, total: 0, title: "Mass Assignment & Security" },
+            eloquentLogic: { correct: 0, total: 0, title: "Eloquent Relationship Logic" },
+            cliWorkflow: { correct: 0, total: 0, title: "Artisan CLI Workflow" }
+        };
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            calculateCompetencyTotals();
+        });
+
+        function calculateCompetencyTotals() {
+            questions.forEach(q => {
+                if (competencyScores[q.competencyKey]) {
+                    competencyScores[q.competencyKey].total++;
+                }
+            });
+        }
+
+        // START GAME
+        function startGame() {
+            playSound('select');
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            health = 100;
+            streak = 0;
+            userAnswers = [];
+
+            // Reset scores
+            for (let k in competencyScores) {
+                competencyScores[k].correct = 0;
+            }
+
+            updateHUD();
+            loadQuestion();
+        }
+
+        // LOAD QUESTION
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            selectedOptionIndex = null;
+
+            // Update Header & Case info
+            document.getElementById('case-badge').innerText = `KASUS #${q.id}`;
+            document.getElementById('case-category').innerText = q.category;
+            document.getElementById('case-count-text').innerText = `Soal ${currentQuestionIndex + 1} dari ${questions.length}`;
+            
+            // Update progress bar
+            const progressPercent = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('game-progress').style.width = `${progressPercent}%`;
+
+            // Set Scenario, IDE code and Question text
+            document.getElementById('scenario-text').innerHTML = q.scenario;
+            document.getElementById('ide-filename').innerText = q.ideFilename;
+            document.getElementById('ide-code').innerText = q.codeSnippet;
+            document.getElementById('question-text').innerText = q.question;
+
+            // Options rendering
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const optionBtn = document.createElement('button');
+                optionBtn.className = `w-full text-left p-3.5 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/80 transition flex items-start gap-3 group text-xs text-slate-300 font-sans leading-relaxed cursor-pointer`;
+                optionBtn.onclick = () => selectOption(idx, optionBtn);
+
+                optionBtn.innerHTML = `
+                    <span class="w-6 h-6 rounded-lg bg-slate-900 border border-slate-700 font-mono text-slate-400 flex items-center justify-center text-xs flex-shrink-0 group-hover:border-laravel group-hover:text-laravel font-bold">${String.fromCharCode(65 + idx)}</span>
+                    <span class="flex-1">${escapeHtml(opt)}</span>
+                `;
+                optionsContainer.appendChild(optionBtn);
+            });
+
+            // Disable submit button until selection
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.className = "w-full py-3 bg-slate-800 text-slate-500 cursor-not-allowed font-bold rounded-xl border border-slate-700 transition flex items-center justify-center gap-2 text-sm";
+
+            lucide.createIcons();
+        }
+
+        // SELECT OPTION
+        function selectOption(index, element) {
+            playSound('select');
+            selectedOptionIndex = index;
+
+            // Highlight selected option button
+            const allOptions = document.querySelectorAll('#options-container button');
+            allOptions.forEach(btn => {
+                btn.classList.remove('border-laravel', 'bg-laravel/10', 'text-white');
+                btn.classList.add('border-slate-800', 'bg-slate-950', 'text-slate-300');
+            });
+
+            element.classList.remove('border-slate-800', 'bg-slate-950', 'text-slate-300');
+            element.classList.add('border-laravel', 'bg-laravel/10', 'text-white');
+
+            // Enable submit button
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = false;
+            submitBtn.className = "w-full py-3 bg-laravel hover:bg-laravel-dark text-white font-bold rounded-xl shadow-lg shadow-laravel/20 transition flex items-center justify-center gap-2 cursor-pointer text-sm transform active:scale-95";
+        }
+
+        // CHECK ANSWER
+        function checkAnswer() {
+            if (selectedOptionIndex === null) return;
+
+            const q = questions[currentQuestionIndex];
+            const isCorrect = selectedOptionIndex === q.correct;
+
+            userAnswers.push({
+                questionId: q.id,
+                isCorrect: isCorrect,
+                competencyKey: q.competencyKey
+            });
+
+            if (isCorrect) {
+                playSound('correct');
+                score += 100 + (streak * 20);
+                streak++;
+                competencyScores[q.competencyKey].correct++;
+                showFeedbackModal(true, "Diagnosa Tepat! (+100 XP)", `Streak ${streak}x Aktif!`, q.explanation);
+            } else {
+                playSound('wrong');
+                health = Math.max(0, health - 20);
+                streak = 0;
+                showFeedbackModal(false, "Diagnosa Kurang Tepat (-20% Health)", `Jawaban Benar: Opsi ${String.fromCharCode(65 + q.correct)}`, q.explanation);
+            }
+
+            updateHUD();
+        }
+
+        // SHOW FEEDBACK MODAL
+        function showFeedbackModal(isCorrect, title, subtitle, explanation) {
+            const modal = document.getElementById('feedback-modal');
+            const iconBg = document.getElementById('feedback-icon-bg');
+            const icon = document.getElementById('feedback-icon');
+            const titleEl = document.getElementById('feedback-title');
+            const subTitleEl = document.getElementById('feedback-subtitle');
+            const expEl = document.getElementById('feedback-explanation');
+
+            if (isCorrect) {
+                iconBg.className = "p-3 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 glow-green";
+                icon.setAttribute('data-lucide', 'check-circle-2');
+                titleEl.className = "font-bold text-lg text-emerald-400";
+            } else {
+                iconBg.className = "p-3 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30";
+                icon.setAttribute('data-lucide', 'alert-triangle');
+                titleEl.className = "font-bold text-lg text-rose-400";
+            }
+
+            titleEl.innerText = title;
+            subTitleEl.innerText = subtitle;
+            expEl.innerHTML = explanation;
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        // NEXT QUESTION OR END GAME
+        function nextQuestion() {
+            playSound('select');
+            document.getElementById('feedback-modal').classList.add('hidden');
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length && health > 0) {
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        // UPDATE HUD
+        function updateHUD() {
+            document.getElementById('score-text').innerText = score;
+            document.getElementById('health-text').innerText = `${health}%`;
+            document.getElementById('health-bar').style.width = `${health}%`;
+            document.getElementById('streak-text').innerText = `${streak}x Streak`;
+
+            if (health <= 40) {
+                document.getElementById('health-bar').className = "bg-rose-500 h-full transition-all duration-300";
+                document.getElementById('health-text').className = "text-rose-400 font-bold animate-pulse";
+            } else {
+                document.getElementById('health-bar').className = "bg-emerald-500 h-full transition-all duration-300";
+                document.getElementById('health-text').className = "text-emerald-400 font-bold";
+            }
+        }
+
+        // END GAME & DIAGNOSTIC REPORT
+        function endGame() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            const totalAnswered = userAnswers.length;
+            const correctAnswers = userAnswers.filter(a => a.isCorrect).length;
+            const accuracy = totalAnswered > 0 ? Math.round((correctAnswers / questions.length) * 100) : 0;
+
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('final-accuracy').innerText = `${accuracy}%`;
+            document.getElementById('final-health').innerText = `${health}%`;
+
+            // Trigger confetti if high score
+            if (accuracy >= 70 && typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            // Render Competency Breakdown
+            const compContainer = document.getElementById('competency-container');
+            compContainer.innerHTML = '';
+
+            for (let key in competencyScores) {
+                const comp = competencyScores[key];
+                const compPercent = comp.total > 0 ? Math.round((comp.correct / comp.total) * 100) : 0;
+
+                const compCard = document.createElement('div');
+                compCard.className = "bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2";
+                compCard.innerHTML = `
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-slate-300">${comp.title}</span>
+                        <span class="font-mono text-laravel font-bold">${comp.correct}/${comp.total} (${compPercent}%)</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+                        <div class="bg-laravel h-full transition-all duration-500" style="width: ${compPercent}%"></div>
+                    </div>
+                `;
+                compContainer.appendChild(compCard);
+            }
+
+            // Expert recommendation text
+            const recomEl = document.getElementById('expert-recom');
+            if (accuracy >= 80) {
+                recomEl.innerText = "Luar biasa! Anda memiliki pemahaman analisis (C4) yang sangat solid tentang arsitektur Model, Migration, Mass Assignment Security, dan Relasi Eloquent di Laravel. Anda siap untuk menangani proyek Laravel skala produksi!";
+            } else if (accuracy >= 50) {
+                recomEl.innerText = "Hasil yang cukup baik! Anda memahami konsep dasar dengan baik, namun perlu lebih teliti dalam memperhatikan parameter Foreign Key pada relasi belongsTo/hasMany serta urutan timestamp saat membuat migration.";
+            } else {
+                recomEl.innerText = "Anda disarankan untuk mengulas kembali modul 'Laravel Model & Migration Masterclass', khususnya pada bagian Konvensi Penamaan Relasi, Atribut $fillable vs Mass Assignment, dan Cascading Delete pada Database Foreign Keys.";
+            }
+
+            lucide.createIcons();
+        }
+
+        // RESTART GAME
+        function restartGame() {
+            playSound('select');
+            document.getElementById('result-screen').classList.add('hidden');
+            startGame();
+        }
+
+        // SCHEMA DRAWER MODAL TOGGLE
+        function toggleSchemaModal() {
+            playSound('select');
+            const modal = document.getElementById('schema-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function switchSchemaTab(tableName) {
+            playSound('select');
+            // Hide all tab content
+            document.querySelectorAll('.schema-content').forEach(el => el.classList.add('hidden'));
+            // Remove active style from buttons
+            document.querySelectorAll('.schema-tab-btn').forEach(btn => {
+                btn.className = "schema-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400";
+            });
+
+            // Show selected
+            document.getElementById(`schema-content-${tableName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tableName}`).className = "schema-tab-btn px-3 py-1.5 rounded-lg bg-laravel text-white font-bold";
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
