@@ -60,10 +60,10 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-lg leading-tight flex items-center gap-2">
-                        <span>Laravel Model Masterclass</span>
+                        <span>Laravel Model & Migration Masterclass</span>
                         <span class="text-xs bg-laravel/20 text-laravel border border-laravel/30 px-2 py-0.5 rounded-full font-mono">v10.x</span>
                     </h1>
-                    <p class="text-xs text-slate-400 hidden sm:block">Panduan Lengkap & Interaktif Pemahaman Model & Eloquent ORM</p>
+                    <p class="text-xs text-slate-400 hidden sm:block">Panduan Lengkap & Interaktif Model, Migration, Seeder & Eloquent ORM</p>
                 </div>
             </div>
         </div>
@@ -140,11 +140,337 @@
                     <i data-lucide="layers" class="w-64 h-64"></i>
                 </div>
                 <div class="relative z-10 space-y-2">
-                    <span class="bg-laravel/20 text-laravel border border-laravel/30 text-[10px] font-mono uppercase px-2.5 py-1 rounded-full font-bold tracking-wider">Modul Interaktif</span>
-                    <h2 class="text-2xl lg:text-3xl font-extrabold text-white">Model & Eloquent ORM di Laravel</h2>
+                    <span class="bg-laravel/20 text-laravel border border-laravel/30 text-[10px] font-mono uppercase px-2.5 py-1 rounded-full font-bold tracking-wider">Modul Interaktif Lengkap</span>
+                    <h2 class="text-2xl lg:text-3xl font-extrabold text-white">Model, Migration & Database di Laravel</h2>
                     <p class="text-slate-300 text-sm max-w-2xl leading-relaxed">
-                        Pelajari bagaimana Model berperan sebagai jembatan antara aplikasi Laravel dan basis data, memahami mass assignment dengan <code>$fillable</code>, menguasai relasi tabel (<code>belongsTo</code> & <code>hasMany</code>), serta mengoptimalkan query menggunakan <code>Scope</code>.
+                        Pelajari rancangan skema database melalui <strong>Migration</strong>, perintah CLI <strong>Artisan</strong> untuk otomatisasi (Model, Migration, Seeder), proteksi <code>$fillable</code>, relasi tabel (<code>belongsTo</code> & <code>hasMany</code>), hingga pengujian query interaktif.
                     </p>
+                </div>
+            </div>
+
+            <!-- SECTION BARU: KONSEP MIGRATION -->
+            <section id="konsep-migration" class="space-y-4 pt-4 border-t border-slate-800">
+                <div class="flex items-center gap-2 text-laravel">
+                    <i data-lucide="file-code-2" class="w-5 h-5"></i>
+                    <h2 class="text-xl font-bold text-slate-100">1. Apa itu Migration?</h2>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    <strong>Database Migration</strong> di Laravel ibarat <em>version control system</em> (seperti Git) khusus untuk struktur database Anda. Migration memungkinkan tim pengembang menentukan dan memodifikasi skema tabel database menggunakan kode PHP tanpa perlu mengeksekusi perintah SQL manual di phpMyAdmin atau DBMS.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-800/70 p-4 rounded-xl border border-slate-700 space-y-2">
+                        <div class="text-xs font-bold text-emerald-400 font-mono flex items-center gap-1.5">
+                            <i data-lucide="arrow-up-circle" class="w-4 h-4"></i> Method up()
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Dijalankan saat perintah <code class="text-amber-300">php artisan migrate</code> dieksekusi. Berfungsi membuat tabel baru, menambahkan kolom, atau membuat indeks relasi.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-800/70 p-4 rounded-xl border border-slate-700 space-y-2">
+                        <div class="text-xs font-bold text-rose-400 font-mono flex items-center gap-1.5">
+                            <i data-lucide="arrow-down-circle" class="w-4 h-4"></i> Method down()
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Dijalankan saat perintah rollback/reset dieksekusi (<code class="text-amber-300">migrate:rollback</code>). Berfungsi membatalkan perubahan (misal: menghapus tabel dengan <code>Schema::dropIfExists</code>).
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION BARU: SKEMA 4 TABEL MIGRATION -->
+            <section id="skema-tabel-migration" class="space-y-4 pt-6 border-t border-slate-800" x-data="{ activeTab: 'users' }">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <div class="flex items-center gap-2 text-laravel">
+                        <i data-lucide="database" class="w-5 h-5"></i>
+                        <h2 class="text-xl font-bold text-slate-100">2. Skema Migration 4 Tabel Utama</h2>
+                    </div>
+                    <!-- Tab Buttons -->
+                    <div class="flex bg-slate-800 p-1 rounded-lg border border-slate-700 gap-1 text-xs font-mono">
+                        <button @click="activeTab = 'users'" :class="activeTab === 'users' ? 'bg-laravel text-white' : 'text-slate-400 hover:text-white'" class="px-3 py-1 rounded transition">users</button>
+                        <button @click="activeTab = 'kategoris'" :class="activeTab === 'kategoris' ? 'bg-laravel text-white' : 'text-slate-400 hover:text-white'" class="px-3 py-1 rounded transition">kategoris</button>
+                        <button @click="activeTab = 'aspirasis'" :class="activeTab === 'aspirasis' ? 'bg-laravel text-white' : 'text-slate-400 hover:text-white'" class="px-3 py-1 rounded transition">aspirasis</button>
+                        <button @click="activeTab = 'tanggapans'" :class="activeTab === 'tanggapans' ? 'bg-laravel text-white' : 'text-slate-400 hover:text-white'" class="px-3 py-1 rounded transition">tanggapans</button>
+                    </div>
+                </div>
+
+                <!-- Migration Code Tab 1: Users -->
+                <div x-show="activeTab === 'users'" class="space-y-3">
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span class="font-mono">database/migrations/xxxx_xx_xx_xxxxxx_create_users_table.php</span>
+                        <span class="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded text-[10px] font-mono">Tabel Pengguna & Hak Akses</span>
+                    </div>
+                    <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono overflow-x-auto"><code class="language-php">&lt;?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('nomor_induk')->unique();
+            $table->string('password');
+            $table->string('kelas')->nullable();
+            
+            // Enum Role Pengguna
+            $table->enum('role', ['siswa', 'wali_kelas', 'waka_sarpras'])->default('siswa');
+
+            // Foreign Key ke Wali Kelas (Self Referencing Relationship)
+            $table->foreignId('wali_id')
+                  ->nullable()
+                  ->constrained('users')
+                  ->onDelete('set null');
+
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('users');
+    }
+};</code></pre>
+                </div>
+
+                <!-- Migration Code Tab 2: Kategoris -->
+                <div x-show="activeTab === 'kategoris'" class="space-y-3">
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span class="font-mono">database/migrations/xxxx_xx_xx_xxxxxx_create_kategoris_table.php</span>
+                        <span class="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded text-[10px] font-mono">Tabel Kategori Pengaduan</span>
+                    </div>
+                    <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono overflow-x-auto"><code class="language-php">&lt;?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create('kategoris', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_kategori')->unique();
+            $table->text('keterangan')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('kategoris');
+    }
+};</code></pre>
+                </div>
+
+                <!-- Migration Code Tab 3: Aspirasis -->
+                <div x-show="activeTab === 'aspirasis'" class="space-y-3">
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span class="font-mono">database/migrations/xxxx_xx_xx_xxxxxx_create_aspirasis_table.php</span>
+                        <span class="bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded text-[10px] font-mono">Tabel Utama Pengaduan</span>
+                    </div>
+                    <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono overflow-x-auto"><code class="language-php">&lt;?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('aspirasis', function (Blueprint $table) {
+            $table->id();
+            
+            // Relasi ke tabel users (Siswa Pelapor)
+            $table->foreignId('user_id')
+                  ->constrained('users')
+                  ->onDelete('cascade');
+
+            // Relasi ke tabel kategoris
+            $table->foreignId('kategori_id')
+                  ->constrained('kategoris')
+                  ->onDelete('cascade');
+
+            $table->text('deskripsi');
+            $table->string('lokasi');
+            $table->string('foto_bukti')->nullable();
+
+            // Status pengaduan berantai: pending -> verified -> proses -> selesai / ditolak
+            $table->enum('status', ['pending', 'verified', 'proses', 'selesai', 'ditolak'])
+                  ->default('pending');
+
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('aspirasis');
+    }
+};</code></pre>
+                </div>
+
+                <!-- Migration Code Tab 4: Tanggapans -->
+                <div x-show="activeTab === 'tanggapans'" class="space-y-3">
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span class="font-mono">database/migrations/xxxx_xx_xx_xxxxxx_create_tanggapans_table.php</span>
+                        <span class="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded text-[10px] font-mono">Tabel Tanggapan & Perbaikan</span>
+                    </div>
+                    <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono overflow-x-auto"><code class="language-php">&lt;?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create('tanggapans', function (Blueprint $table) {
+            $table->id();
+
+            // Relasi ke Aspirasi yang ditanggapi
+            $table->foreignId('aspirasi_id')->constrained('aspirasis')->onDelete('cascade');
+
+            // Relasi ke Petugas (Waka Sarpras) yang memberi tanggapan
+            $table->foreignId('petugas_id')->constrained('users')->onDelete('cascade');
+
+            $table->text('isi_tanggapan');
+            $table->string('foto_perbaikan')->nullable();
+
+            $table->timestamps();
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('tanggapans');
+    }
+};</code></pre>
+                </div>
+
+                <!-- Explanation Note -->
+                <div class="p-3.5 bg-slate-800/80 rounded-xl border border-slate-700/80 text-xs text-slate-300 space-y-2">
+                    <div class="font-bold text-laravel flex items-center gap-1.5">
+                        <i data-lucide="key-round" class="w-4 h-4"></i> Poin Penting pada Migration Relasi:
+                    </div>
+                    <ul class="list-disc list-inside space-y-1 text-slate-400">
+                        <li><code>foreignId('user_id')->constrained('users')</code>: Otomatis mendefinisikan Foreign Key bertipe BigInteger yang merujuk pada kolom <code>id</code> di tabel <code>users</code>.</li>
+                        <li><code>onDelete('cascade')</code>: Jika data induk dihapus, seluruh data anak yang terhubung otomatis ikut terhapus.</li>
+                        <li><code>onDelete('set null')</code>: Jika data induk dihapus, kolom foreign key anak diubah menjadi <code>NULL</code> (membutuhkan <code>nullable()</code>).</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SECTION BARU: PERINTAH ARTISAN LENGKAP -->
+            <section id="artisan-commands" class="space-y-4 pt-6 border-t border-slate-800">
+                <div class="flex items-center gap-2 text-laravel">
+                    <i data-lucide="terminal" class="w-5 h-5"></i>
+                    <h2 class="text-xl font-bold text-slate-100">3. Perintah Artisan CLI (Model, Migration & Seeder)</h2>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Laravel menyediakan perintah perintah berbasis terminal (CLI Artisan) untuk membuat file komponen secara otomatis serta mengelola eksekusi database migration dan seeding data.
+                </p>
+
+                <!-- Sub 1: Pembuatan Komponen -->
+                <div class="space-y-3">
+                    <h3 class="text-sm font-bold text-sky-400 flex items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i> A. Perintah Membuat Model, Migration & Seeder
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                            <span class="text-xs font-bold text-emerald-400">1. Paket Lengkap Sekaligus (All-in-One)</span>
+                            <pre class="text-xs font-mono text-amber-300 bg-slate-900 p-2 rounded">php artisan make:model Aspirasi -mfs</pre>
+                            <p class="text-[11px] text-slate-400">
+                                Membuat Model <code class="text-slate-200">Aspirasi</code> sekaligus berkas <span class="text-emerald-400 font-mono">-m</span> (Migration), <span class="text-emerald-400 font-mono">-f</span> (Factory), dan <span class="text-emerald-400 font-mono">-s</span> (Seeder).
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                            <span class="text-xs font-bold text-sky-400">2. Model + Migration Saja</span>
+                            <pre class="text-xs font-mono text-amber-300 bg-slate-900 p-2 rounded">php artisan make:model Kategori -m</pre>
+                            <p class="text-[11px] text-slate-400">
+                                Membuat Model <code class="text-slate-200">Kategori</code> beserta berkas migration <code class="text-slate-200">create_kategoris_table</code>.
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                            <span class="text-xs font-bold text-purple-400">3. Membuat Migration Spesifik</span>
+                            <pre class="text-xs font-mono text-amber-300 bg-slate-900 p-2 rounded">php artisan make:migration create_tanggapans_table</pre>
+                            <p class="text-[11px] text-slate-400">
+                                Membuat berkas migration baru secara independen di folder <code class="text-slate-200">database/migrations</code>.
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                            <span class="text-xs font-bold text-rose-400">4. Membuat Seeder Spesifik</span>
+                            <pre class="text-xs font-mono text-amber-300 bg-slate-900 p-2 rounded">php artisan make:seeder UserSeeder</pre>
+                            <p class="text-[11px] text-slate-400">
+                                Membuat berkas seeder baru untuk mengisi data dummy awal di folder <code class="text-slate-200">database/seeders</code>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub 2: Eksekusi Migration & Seeder -->
+                <div class="space-y-3 pt-2">
+                    <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                        <i data-lucide="play" class="w-4 h-4"></i> B. Perintah Menjalankan Migration & Seeder
+                    </h3>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left border-collapse bg-slate-800/60 rounded-xl overflow-hidden border border-slate-700">
+                            <thead class="bg-slate-900 text-slate-300 uppercase font-mono">
+                                <tr>
+                                    <th class="p-3 border-b border-slate-700">Perintah Artisan CLI</th>
+                                    <th class="p-3 border-b border-slate-700">Fungsi & Kegunaan</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-700 font-mono text-slate-300">
+                                <tr class="hover:bg-slate-800/90">
+                                    <td class="p-3 text-amber-300 font-bold">php artisan migrate</td>
+                                    <td class="p-3 font-sans">Menjalankan semua migration baru yang belum dieksekusi ke database.</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/90">
+                                    <td class="p-3 text-amber-300 font-bold">php artisan migrate:fresh</td>
+                                    <td class="p-3 font-sans text-rose-300">Menghapus seluruh tabel database (drop all) lalu merunning ulang seluruh migration dari awal.</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/90">
+                                    <td class="p-3 text-amber-300 font-bold">php artisan migrate:fresh --seed</td>
+                                    <td class="p-3 font-sans text-emerald-300">Menghapus ulang semua tabel, migrasi dari awal, lalu otomatis mengeksekusi Seeder (<code class="font-mono">DatabaseSeeder</code>).</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/90">
+                                    <td class="p-3 text-amber-300 font-bold">php artisan migrate:rollback</td>
+                                    <td class="p-3 font-sans">Membatalkan (rollback) eksekusi batch migration terakhir.</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/90">
+                                    <td class="p-3 text-amber-300 font-bold">php artisan db:seed</td>
+                                    <td class="p-3 font-sans">Menjalankan kelas utama <code class="font-mono">DatabaseSeeder</code>.</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/90">
+                                    <td class="p-3 text-amber-300 font-bold">php artisan db:seed --class=UserSeeder</td>
+                                    <td class="p-3 font-sans text-sky-300">Menjalankan <strong>Seeder Spesifik tertentu</strong> tanpa mengeksekusi seeder lainnya.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 1: Apa itu Model -->
+            <section id="apa-itu-model" class="space-y-4 pt-6 border-t border-slate-800">
+                <div class="flex items-center gap-2 text-laravel">
+                    <i data-lucide="box" class="w-5 h-5"></i>
+                    <h2 class="text-xl font-bold text-slate-100">4. Apa itu Model?</h2>
                 </div>
             </div>
 
@@ -201,7 +527,7 @@
             <section id="struktur-dasar" class="space-y-4 pt-6 border-t border-slate-800">
                 <div class="flex items-center gap-2 text-laravel">
                     <i data-lucide="code-2" class="w-5 h-5"></i>
-                    <h2 class="text-xl font-bold text-slate-100">2. Struktur Dasar Model Laravel</h2>
+                    <h2 class="text-xl font-bold text-slate-100">5. Struktur Dasar Model Laravel</h2>
                 </div>
                 <p class="text-slate-300 text-sm leading-relaxed">
                     Model pada Laravel merupakan sebuah class PHP biasa yang melakukan <em>extend</em> terhadap class <code>Illuminate\Database\Eloquent\Model</code>.
@@ -246,7 +572,7 @@ class Kategori extends Model
             <section id="model-dan-tabel" class="space-y-4 pt-6 border-t border-slate-800">
                 <div class="flex items-center gap-2 text-laravel">
                     <i data-lucide="table" class="w-5 h-5"></i>
-                    <h2 class="text-xl font-bold text-slate-100">3. Konvensi Model dan Tabel Database</h2>
+                    <h2 class="text-xl font-bold text-slate-100">6. Konvensi Model dan Tabel Database</h2>
                 </div>
                 <p class="text-slate-300 text-sm leading-relaxed">
                     Secara bawaan (*convention over configuration*), Laravel secara otomatis memetakan nama class Model berbentuk <strong>Singular (Tunggal) / PascalCase</strong> ke nama tabel di database yang berbentuk <strong>Plural (Jamak) / snake_case Bahasa Inggris</strong>.
@@ -290,7 +616,7 @@ $kategori = Kategori::all();</code></pre>
             <section id="fillable" class="space-y-4 pt-6 border-t border-slate-800">
                 <div class="flex items-center gap-2 text-laravel">
                     <i data-lucide="shield-check" class="w-5 h-5"></i>
-                    <h2 class="text-xl font-bold text-slate-100">4. Mass Assignment & <code>$fillable</code></h2>
+                    <h2 class="text-xl font-bold text-slate-100">7. Mass Assignment & <code>$fillable</code></h2>
                 </div>
                 <p class="text-slate-300 text-sm leading-relaxed">
                     Properti <code>$fillable</code> digunakan untuk menentukan kolom mana saja pada tabel database yang diizinkan untuk diisi menggunakan fitur <strong>Mass Assignment</strong>.
@@ -333,7 +659,7 @@ Kategori::create([
             <section id="contoh-model-aspirasi" class="space-y-4 pt-6 border-t border-slate-800">
                 <div class="flex items-center gap-2 text-laravel">
                     <i data-lucide="file-text" class="w-5 h-5"></i>
-                    <h2 class="text-xl font-bold text-slate-100">5. Studi Kasus: Model Aspirasi</h2>
+                    <h2 class="text-xl font-bold text-slate-100">8. Studi Kasus: Model Aspirasi</h2>
                 </div>
                 <p class="text-slate-300 text-sm leading-relaxed">
                     Mari kita tinjau penerapannya pada kasus nyata aplikasi pengaduan/aspirasi siswa. Berikut properti <code>$fillable</code> pada Model <code>Aspirasi</code>:
@@ -373,7 +699,7 @@ class Aspirasi extends Model
             <section id="relasi-belongsto" class="space-y-4 pt-6 border-t border-slate-800">
                 <div class="flex items-center gap-2 text-laravel">
                     <i data-lucide="git-fork" class="w-5 h-5"></i>
-                    <h2 class="text-xl font-bold text-slate-100">6, 7 & 8. Relasi Antar-Model & Method <code>belongsTo</code></h2>
+                    <h2 class="text-xl font-bold text-slate-100">9. Relasi Antar-Model & Method <code>belongsTo</code></h2>
                 </div>
                 <p class="text-slate-300 text-sm leading-relaxed">
                     Salah satu keunggulan utama Eloquent adalah kemudahannya menghubungkan tabel (Relationships). Method <code>belongsTo()</code> digunakan pada model tabel anak yang menyimpan <strong>Foreign Key</strong>.
@@ -428,7 +754,7 @@ echo $aspirasi->kategori->nama_kategori;</code></pre>
             <section id="relasi-hasmany" class="space-y-4 pt-6 border-t border-slate-800">
                 <div class="flex items-center gap-2 text-laravel">
                     <i data-lucide="network" class="w-5 h-5"></i>
-                    <h2 class="text-xl font-bold text-slate-100">9 & 10. Relasi <code>hasMany</code> & Perbedaannya</h2>
+                    <h2 class="text-xl font-bold text-slate-100">10. Relasi <code>hasMany</code> & Perbedaannya</h2>
                 </div>
                 <p class="text-slate-300 text-sm leading-relaxed">
                     Method <code>hasMany()</code> digunakan pada model induk (*parent*) untuk menandakan bahwa 1 data induk memiliki banyak (*many*) data anak.
@@ -482,7 +808,7 @@ echo $aspirasi->kategori->nama_kategori;</code></pre>
             <section id="scope-model" class="space-y-4 pt-6 border-t border-slate-800">
                 <div class="flex items-center gap-2 text-laravel">
                     <i data-lucide="filter" class="w-5 h-5"></i>
-                    <h2 class="text-xl font-bold text-slate-100">11 & 12. Local Scope pada Model</h2>
+                    <h2 class="text-xl font-bold text-slate-100">11. Local Scope pada Model</h2>
                 </div>
                 <p class="text-slate-300 text-sm leading-relaxed">
                     <strong>Local Scope</strong> memungkinkan kita untuk mendefinisikan kumpulan kondisi query yang sering digunakan berulang kali, sehingga sintaks penulisan di Controller menjadi lebih rapi dan ekspresif.
@@ -664,14 +990,17 @@ $aspirasiSiswa = Aspirasi::milikPerwalian($waliId)->get();</code></pre>
         function appData() {
             return {
                 sidebarOpen: false,
-                activeSection: 'apa-itu-model',
+                activeSection: 'konsep-migration',
                 searchQuery: '',
-                readSections: ['apa-itu-model'],
+                readSections: ['konsep-migration'],
                 openQuizModal: false,
                 activeSim: 0,
                 toast: { show: false, message: '' },
 
                 navItems: [
+                    { id: 'konsep-migration', title: 'Konsep & Method Migration' },
+                    { id: 'skema-tabel-migration', title: 'Skema 4 Tabel Migration' },
+                    { id: 'artisan-commands', title: 'Perintah Artisan CLI (Model & Seeder)' },
                     { id: 'apa-itu-model', title: 'Apa itu Model?' },
                     { id: 'struktur-dasar', title: 'Struktur Dasar Model' },
                     { id: 'model-dan-tabel', title: 'Model & Tabel Database' },
@@ -763,24 +1092,46 @@ $aspirasiSiswa = Aspirasi::milikPerwalian($waliId)->get();</code></pre>
 
                 quizQuestions: [
                     {
-                        question: 'Apa fungsi utama dari Model pada arsitektur MVC Laravel?',
+                        question: 'Perintah Artisan mana yang digunakan untuk membuat Model sekaligus Migration, Factory, dan Seeder?',
                         options: [
-                            'Mengatur tampilan antarmuka pengguna (UI)',
-                            'Menghubungkan aplikasi Laravel dengan database/data',
-                            'Mengelola routing URL aplikasi',
-                            'Menjalankan kompresi file CSS/JS'
+                            'php artisan make:model Aspirasi -mfs',
+                            'php artisan make:all Aspirasi',
+                            'php artisan create:model Aspirasi --complete',
+                            'php artisan migrate:model Aspirasi'
+                        ],
+                        correct: 0,
+                        explanation: 'Flag -mfs secara ringkas membuat Migration (-m), Factory (-f), dan Seeder (-s) saat membuat Model.'
+                    },
+                    {
+                        question: 'Perintah untuk menghapus seluruh tabel database lalu menjalankan ulang semua migration dan seeder adalah...',
+                        options: [
+                            'php artisan migrate:rollback --seed',
+                            'php artisan migrate:fresh --seed',
+                            'php artisan db:reset --force',
+                            'php artisan migrate:refresh'
                         ],
                         correct: 1,
-                        explanation: 'Model bertugas mengelola data dan menjembatani komunikasi aplikasi dengan basis data via Eloquent ORM.'
+                        explanation: 'php artisan migrate:fresh --seed membuang semua tabel (drop all) lalu mere-run migration dan seeder.'
                     },
                     {
-                        question: 'Tabel database bernama "kategoris" secara konvensi Laravel dihubungkan dengan Model bernama...',
-                        options: ['Kategoris.php', 'KategoriModel.php', 'Kategori.php', 'TabelKategori.php'],
-                        correct: 2,
-                        explanation: 'Laravel menggunakan konvensi nama Model Singular (Kategori) untuk tabel Plural (kategoris).'
+                        question: 'Bagaimana cara memanggil seeder tertentu secara spesifik (contoh: UserSeeder)?',
+                        options: [
+                            'php artisan db:seed --class=UserSeeder',
+                            'php artisan run:seeder UserSeeder',
+                            'php artisan make:seeder UserSeeder --run',
+                            'php artisan seed:user'
+                        ],
+                        correct: 0,
+                        explanation: 'Option --class=NamaSeeder digunakan untuk mengeksekusi seeder tertentu saja.'
                     },
                     {
-                        question: 'Properti $fillable pada Model digunakan untuk...',
+                        question: 'Method migration mana yang berisi instruksi untuk menghapus/membatalkan tabel saat rollback?',
+                        options: ['function up()', 'function down()', 'function drop()', 'function reverse()'],
+                        correct: 1,
+                        explanation: 'Method down() berfungsi membatalkan perubahan yang dibuat oleh method up() saat terjadi rollback.'
+                    },
+                    {
+                        question: 'Apa fungsi dari properti $fillable pada Model Laravel?',
                         options: [
                             'Menentukan kolom mana yang boleh diisi via Mass Assignment',
                             'Menghapus kolom database secara otomatis',
@@ -788,19 +1139,7 @@ $aspirasiSiswa = Aspirasi::milikPerwalian($waliId)->get();</code></pre>
                             'Menyimpan query SQL mentah'
                         ],
                         correct: 0,
-                        explanation: 'properti $fillable menjaga keamanan aplikasi dari Mass Assignment Vulnerability.'
-                    },
-                    {
-                        question: 'Jika 1 Aspirasi dimiliki oleh 1 User, relasi pada Model Aspirasi didefinisikan dengan...',
-                        options: ['hasMany(User::class)', 'belongsTo(User::class)', 'belongsToMany(User::class)', 'hasOneThrough(User::class)'],
-                        correct: 1,
-                        explanation: 'belongsTo() digunakan pada model yang menyimpan Foreign Key (user_id).'
-                    },
-                    {
-                        question: 'Penulisan nama method untuk Local Scope di Model Laravel yang benar adalah...',
-                        options: ['public function getStatus()', 'public function filterStatus()', 'public function scopeStatus()', 'public function queryStatus()'],
-                        correct: 2,
-                        explanation: 'Local Scope wajib diawali dengan awalan kata "scope", contoh: scopeStatus($query, $val).'
+                        explanation: 'Properti $fillable menjaga keamanan aplikasi dari Mass Assignment Vulnerability.'
                     }
                 ],
 
