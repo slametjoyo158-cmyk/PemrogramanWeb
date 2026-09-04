@@ -291,8 +291,8 @@ return new class extends Migration
             
             // Relasi ke tabel users (Siswa Pelapor)
             $table->foreignId('user_id')
-                  ->constrained('users')
-                  ->onDelete('cascade');
+                  ->constrained('users')//Kolom user_id pada tabel aspirasis menjadi foreign key yang mengacu ke kolom id pada tabel users
+                  ->onDelete('cascade'); //Jika data pada tabel users dihapus, maka semua data aspirasis yang memiliki user_id tersebut ikut dihapus otomatis.
 
             // Relasi ke tabel kategoris
             $table->foreignId('kategori_id')
