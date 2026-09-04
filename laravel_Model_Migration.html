@@ -184,7 +184,7 @@
                 <div class="flex items-center justify-between flex-wrap gap-2">
                     <div class="flex items-center gap-2 text-laravel">
                         <i data-lucide="database" class="w-5 h-5"></i>
-                        <h2 class="text-xl font-bold text-slate-700">2. Skema Migration 4 Tabel Utama</h2>
+                        <h2 class="text-xl font-bold text-slate-900">2. Skema Migration 4 Tabel Utama</h2>
                     </div>
                     <!-- Tab Buttons -->
                     <div class="flex bg-slate-800 p-1 rounded-lg border border-slate-700 gap-1 text-xs font-mono">
@@ -374,7 +374,7 @@ return new class extends Migration
             <section id="artisan-commands" class="space-y-4 pt-6 border-t border-slate-800">
                 <div class="flex items-center gap-2 text-laravel">
                     <i data-lucide="terminal" class="w-5 h-5"></i>
-                    <h2 class="text-xl font-bold text-slate-700">3. Perintah Artisan CLI (Model, Migration & Seeder)</h2>
+                    <h2 class="text-xl font-bold text-slate-900">3. Perintah Artisan CLI (Model, Migration & Seeder)</h2>
                 </div>
                 <p class="text-slate-300 text-sm leading-relaxed">
                     Laravel menyediakan perintah perintah berbasis terminal (CLI Artisan) untuk membuat file komponen secara otomatis serta mengelola eksekusi database migration dan seeding data.
@@ -470,7 +470,7 @@ return new class extends Migration
             <section id="apa-itu-model" class="space-y-4 pt-6 border-t border-slate-800">
                 <div class="flex items-center gap-2 text-laravel">
                     <i data-lucide="box" class="w-5 h-5"></i>
-                    <h2 class="text-xl font-bold text-slate-700">4. Apa itu Model?</h2>
+                    <h2 class="text-xl font-bold text-slate-900">4. Apa itu Model?</h2>
                 </div>
             </div>
 
@@ -480,7 +480,7 @@ return new class extends Migration
                     <i data-lucide="box" class="w-5 h-5"></i>
                     <h2 class="text-xl font-bold text-slate-700">1. Apa itu Model?</h2>
                 </div>
-                <p class="text-slate-300 text-sm leading-relaxed">
+                <p class="text-slate-900 text-sm leading-relaxed">
                     Dalam konsep <strong>MVC (Model–View–Controller)</strong>, Model adalah bagian yang bertugas khusus berhubungan dengan data dan database.
                 </p>
                 
@@ -490,7 +490,7 @@ return new class extends Migration
                         <p class="text-sm font-medium text-slate-700">
                             <strong>Model</strong> = Penghubung utama antara aplikasi Laravel dengan data di dalam database.
                         </p>
-                        <p class="text-xs text-slate-700 mt-2">
+                        <p class="text-xs text-slate-900 mt-2">
                             Model memungkinkan kita melakukan operasi terhadap database menggunakan <strong>Eloquent ORM</strong> tanpa harus selalu menulis query SQL secara eksplisit.
                         </p>
                     </div>
@@ -527,9 +527,9 @@ return new class extends Migration
             <section id="struktur-dasar" class="space-y-4 pt-6 border-t border-slate-800">
                 <div class="flex items-center gap-2 text-laravel">
                     <i data-lucide="code-2" class="w-5 h-5"></i>
-                    <h2 class="text-xl font-bold text-slate-700">5. Struktur Dasar Model Laravel</h2>
+                    <h2 class="text-xl font-bold text-slate-900">5. Struktur Dasar Model Laravel</h2>
                 </div>
-                <p class="text-slate-300 text-sm leading-relaxed">
+                <p class="text-slate-900 text-sm leading-relaxed">
                     Model pada Laravel merupakan sebuah class PHP biasa yang melakukan <em>extend</em> terhadap class <code>Illuminate\Database\Eloquent\Model</code>.
                 </p>
 
@@ -550,8 +550,8 @@ class Kategori extends Model
                 </div>
 
                 <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/70 space-y-3">
-                    <h3 class="text-sm font-semibold text-slate-700">Penjelasan Bagian Penting:</h3>
-                    <ul class="space-y-2 text-xs text-slate-700">
+                    <h3 class="text-sm font-semibold text-slate-900">Penjelasan Bagian Penting:</h3>
+                    <ul class="space-y-2 text-xs text-slate-900">
                         <li class="flex items-start gap-2">
                             <span class="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded font-mono font-bold">namespace</span>
                             <span><code>namespace App\Models;</code> — Menandakan lokasi berkas fisik model berada di dalam folder <code>app/Models</code>.</span>
@@ -572,10 +572,10 @@ class Kategori extends Model
             <section id="model-dan-tabel" class="space-y-4 pt-6 border-t border-slate-800">
                 <div class="flex items-center gap-2 text-laravel">
                     <i data-lucide="table" class="w-5 h-5"></i>
-                    <h2 class="text-xl font-bold text-slate-700">6. Konvensi Model dan Tabel Database</h2>
+                    <h2 class="text-xl font-bold text-slate-900">6. Konvensi Model dan Tabel Database</h2>
                 </div>
-                <p class="text-slate-300 text-sm leading-relaxed">
-                    Secara bawaan (*convention over configuration*), Laravel secara otomatis memetakan nama class Model berbentuk <strong>Singular (Tunggal) / PascalCase</strong> ke nama tabel di database yang berbentuk <strong>Plural (Jamak) / snake_case Bahasa Inggris</strong>.
+                <p class="text-slate-300 text-sm leading-relaxconfigurationed">
+                    Secara bawaan (*convention over *), Laravel secara otomatis memetakan nama class Model berbentuk <strong>Singular (Tunggal) / PascalCase</strong> ke nama tabel di database yang berbentuk <strong>Plural (Jamak) / snake_case Bahasa Inggris</strong>.
                 </p>
 
                 <!-- Interactive Diagram Visualization -->
@@ -641,7 +641,7 @@ class Kategori extends Model
                     </div>
 
                     <div class="space-y-2">
-                        <span class="text-xs font-bold text-slate-700">Penggunaan dalam Controller / Logic:</span>
+                        <span class="text-xs font-bold text-slate-900">Penggunaan dalam Controller / Logic:</span>
                         <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono"><code class="language-php">// Mengisi data sekaligus (Mass Assignment)
 Kategori::create([
     'nama_kategori' => 'Fasilitas',
@@ -699,7 +699,7 @@ class Aspirasi extends Model
             <section id="relasi-belongsto" class="space-y-4 pt-6 border-t border-slate-800">
                 <div class="flex items-center gap-2 text-laravel">
                     <i data-lucide="git-fork" class="w-5 h-5"></i>
-                    <h2 class="text-xl font-bold text-slate-700">9. Relasi Antar-Model & Method <code>belongsTo</code></h2>
+                    <h2 class="text-xl font-bold text-slate-900">9. Relasi Antar-Model & Method <code>belongsTo</code></h2>
                 </div>
                 <p class="text-slate-300 text-sm leading-relaxed">
                     Salah satu keunggulan utama Eloquent adalah kemudahannya menghubungkan tabel (Relationships). Method <code>belongsTo()</code> digunakan pada model tabel anak yang menyimpan <strong>Foreign Key</strong>.
@@ -727,12 +727,12 @@ class Aspirasi extends Model
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <span class="text-xs font-bold text-slate-300">1. Relasi Aspirasi ke User (Pelapor)</span>
+                        <span class="text-xs font-bold text-slate-900">1. Relasi Aspirasi ke User (Pelapor)</span>
                         <pre class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs font-mono"><code class="language-php">public function pelapor()
 {
     return $this->belongsTo(User::class, 'user_id');
 }</code></pre>
-                        <p class="text-xs text-slate-400">Cara Penggunaan:</p>
+                        <p class="text-xs text-slate-900">Cara Penggunaan:</p>
                         <pre class="bg-slate-900 p-2.5 rounded text-xs font-mono text-emerald-400"><code>$aspirasi = Aspirasi::find(1);
 echo $aspirasi->pelapor->name;</code></pre>
                     </div>
@@ -743,7 +743,7 @@ echo $aspirasi->pelapor->name;</code></pre>
 {
     return $this->belongsTo(Kategori::class, 'kategori_id');
 }</code></pre>
-                        <p class="text-xs text-slate-400">Cara Penggunaan:</p>
+                        <p class="text-xs text-slate-900">Cara Penggunaan:</p>
                         <pre class="bg-slate-900 p-2.5 rounded text-xs font-mono text-emerald-400"><code>$aspirasi = Aspirasi::find(1);
 echo $aspirasi->kategori->nama_kategori;</code></pre>
                     </div>
